@@ -39,13 +39,14 @@ void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
         }
         else{
             bufUserName[strcspn(bufUserName, "\n")] = 0;
+            if(strlen(bufUserName)==0){
+                break;
+            }
             if(!containsUserName(bufUserName, userNames)&& *userCount <= MAX_USERS){
                 /* userNames[socketFd] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1)); */
                 strcpy(userNames[socketFd],bufUserName);
                 char vardasOk[] = "VK\n\0";
                 (*userCount)++;
-                printf("\'%s\'",vardasOk);
-
                 sendMessage(socketFd,vardasOk);
                 break;
             }
@@ -132,7 +133,6 @@ int startServer(char port[],char ip[]){
                             fdmax = newfd;
                         }
                         getUserName(newfd,&userCount,userNames);
-                        printf("%d\n",userCount);
                     }
                 }
                 else{
