@@ -14,6 +14,12 @@
 #define MAX_USERNAME_SIZE 50
 #define MAX_USERS 50
 
+void sendMessage(int socketFd,char* message){
+    if (send(socketFd, message, strlen(message), 0) == -1){
+        printf("send error\n");
+    }
+}
+
 int containsUserName(char *searchedString, char *userNames[MAX_USERS]){
     for(int i=0;i<MAX_USERS;i++){
         if(userNames[i]!=NULL&&strcmp(searchedString,userNames[i])==0){
@@ -24,25 +30,23 @@ int containsUserName(char *searchedString, char *userNames[MAX_USERS]){
 }
 
 void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
-    char *atsiuskVarda=malloc(sizeof(char)*(MAX_SIZE+1));
-    strcpy(atsiuskVarda,"ATSIUSKVARDA\n\0");
+    char atsiuskVarda[]="ATSIUSKVARDA\n\0";
     while(1){
         char bufUserName[MAX_USERS];
-        if(send(socketFd,atsiuskVarda,strlen(atsiuskVarda),0)==-1){
-            printf("send error\n");
-        }
+        sendMessage(socketFd,atsiuskVarda);
         if (recv(socketFd, bufUserName, sizeof bufUserName, 0) < 0){
             printf("recv error\n");
         }
         else{
             bufUserName[strcspn(bufUserName, "\n")] = 0;
             if(!containsUserName(bufUserName, userNames)&& *userCount <= MAX_USERS){
-                userNames[socketFd] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1));
+                /* userNames[socketFd] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1)); */
                 strcpy(userNames[socketFd],bufUserName);
-                char *vardasOk = "VK\n\0";
+                char vardasOk[] = "VK\n\0";
                 (*userCount)++;
                 printf("\'%s\'",vardasOk);
-                send(socketFd,vardasOk,strlen(vardasOk),0);
+
+                sendMessage(socketFd,vardasOk);
                 break;
             }
             else if(*userCount > MAX_USERS){
@@ -57,11 +61,12 @@ int startServer(char port[],char ip[]){
     char *userNames[MAX_USERS];
     int userCount=0;
     fd_set read_fds, master;
-
+    for(int i=0;i<MAX_USERS;i++){
+        userNames[i] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1));
+    }
     struct addrinfo *servInfo, *currInfo, hints;
     struct sockaddr_storage remoteaddr;
     char buf[MAX_SIZE];
-
 
     memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
@@ -141,7 +146,7 @@ int startServer(char port[],char ip[]){
                         close(i);
                         FD_CLR(i, &master);
                         userCount--;
-                        free(userNames[i]);
+                        /* free(userNames[i]); */
                     }
                     else{
                         for(int j = 0; j <= fdmax; j++){
@@ -150,9 +155,7 @@ int startServer(char port[],char ip[]){
                                     char message[MAX_SIZE]="PRANESIMAS";
                                     strcat(strcat(strcat(strcat(message,userNames[i]),": "),buf),"\0");
                                     printf("%s",message);
-                                    if (send(j, message, strlen(message), 0) == -1){// send error here
-                                        printf("send error\n");
-                                    }
+                                    sendMessage(j,message);
                                 }
                             }
                         }
