@@ -1,0 +1,743 @@
+==82307== Memcheck, a memory error detector
+==82307== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==82307== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
+==82307== Command: ./server
+==82307== Parent PID: 58030
+==82307== 
+--82307-- 
+--82307-- Valgrind options:
+--82307--    --leak-check=full
+--82307--    --show-leak-kinds=all
+--82307--    --track-origins=yes
+--82307--    --verbose
+--82307--    --log-file=valgrind-out.txt
+--82307-- Contents of /proc/version:
+--82307--   Linux version 5.16.13-arch1-1 (linux@archlinux) (gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.38) #1 SMP PREEMPT Tue, 08 Mar 2022 20:07:36 +0000
+--82307-- 
+--82307-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx-avx2-bmi-f16c-rdrand-rdseed
+--82307-- Page sizes: currently 4096, max supported 4096
+--82307-- Valgrind library directory: /usr/lib/valgrind
+--82307-- Reading syms from /home/pijus/Desktop/MultiUserServer/server
+--82307--    object doesn't have a dynamic symbol table
+--82307-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
+--82307--    object doesn't have a symbol table
+--82307--    object doesn't have a dynamic symbol table
+--82307-- Scheduler: using generic scheduler lock implementation.
+--82307-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==82307== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-82307-by-pijus-on-???
+==82307== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-82307-by-pijus-on-???
+==82307== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-82307-by-pijus-on-???
+==82307== 
+==82307== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==82307== don't want to do, unless you know exactly what you're doing,
+==82307== or are doing some strange experiment):
+==82307==   /usr/lib/valgrind/../../bin/vgdb --pid=82307 ...command...
+==82307== 
+==82307== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==82307==   /path/to/gdb ./server
+==82307== and then give GDB the following command
+==82307==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=82307
+==82307== --pid is optional if only one valgrind process is running
+==82307== 
+==82307== Syscall param set_robust_list(head) points to uninitialised byte(s)
+==82307==    at 0x464408: __tls_init_tp (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x404959: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Address 0x40006b0 is in the brk data segment 0x4000000-0x4000dbf
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x47487E: getrandom (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41A025: ptmalloc_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D804: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D611: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D701: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41C3AB: _int_malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CEB4: tcache_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D70B: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A0B21: _dl_init_paths (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x466103: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A0B3F: _dl_init_paths (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x466103: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x49EB3C: _dl_find_object_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x466358: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x451B86: gaih_inet.constprop.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4533E8: getaddrinfo (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401BE4: startServer (server.c:68)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x480051: _IO_file_doallocate (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x416650: _IO_doallocbuf (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x415877: _IO_file_overflow (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x414BF6: _IO_file_xsputn (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41109C: puts (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401D85: startServer (server.c:101)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x45421E: write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4145CC: _IO_file_write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41367D: new_do_write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x414FD8: _IO_do_write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4157E2: _IO_file_overflow (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x411131: puts (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401D85: startServer (server.c:101)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x4550B4: select (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401EDB: startServer (server.c:109)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x401F40: startServer (server.c:115)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456A9E: accept (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401F7F: startServer (server.c:118)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456D31: send (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4019EC: getUserName (server.c:32)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456C71: recv (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401A1F: getUserName (server.c:35)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x40E988: __vfprintf_internal (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40A86B: printf (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4018F7: containsUserName (server.c:20)
+==82307==    by 0x401A6F: getUserName (server.c:40)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x401912: containsUserName (server.c:21)
+==82307==    by 0x401A6F: getUserName (server.c:40)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401A9C: getUserName (server.c:41)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456D31: send (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401B3A: getUserName (server.c:46)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456C71: recv (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x402062: startServer (server.c:132)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x402170: startServer (server.c:146)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x40E988: __vfprintf_internal (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40A86B: printf (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4021A1: startServer (server.c:147)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4021BD: startServer (server.c:150)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x43C1C7: __strlen_avx2 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4021E3: startServer (server.c:151)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41BBCB: sysmalloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CD6E: _int_malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CEB4: tcache_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D70B: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Use of uninitialised value of size 8
+==82307==    at 0x4021FB: startServer (server.c:151)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41BBCB: sysmalloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CD6E: _int_malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CEB4: tcache_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D70B: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456D31: send (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4022B1: startServer (server.c:154)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== Process terminating with default action of signal 2 (SIGINT)
+==82307==    at 0x4550C9: select (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401EDB: startServer (server.c:109)
+==82307==    by 0x402343: main (server.c:170)
+==82307== 
+==82307== HEAP SUMMARY:
+==82307==     in use at exit: 0 bytes in 0 blocks
+==82307==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==82307== 
+==82307== All heap blocks were freed -- no leaks are possible
+==82307== 
+==82307== ERROR SUMMARY: 522 errors from 28 contexts (suppressed: 0 from 0)
+==82307== 
+==82307== 1 errors in context 1 of 28:
+==82307== Use of uninitialised value of size 8
+==82307==    at 0x4021FB: startServer (server.c:151)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41BBCB: sysmalloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CD6E: _int_malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CEB4: tcache_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D70B: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 2 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x43C1C7: __strlen_avx2 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4021E3: startServer (server.c:151)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41BBCB: sysmalloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CD6E: _int_malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CEB4: tcache_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D70B: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 3 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4021BD: startServer (server.c:150)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 4 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x480051: _IO_file_doallocate (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x416650: _IO_doallocbuf (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x415877: _IO_file_overflow (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x414BF6: _IO_file_xsputn (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41109C: puts (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401D85: startServer (server.c:101)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 5 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x451B86: gaih_inet.constprop.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4533E8: getaddrinfo (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401BE4: startServer (server.c:68)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 6 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x49EB3C: _dl_find_object_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x466358: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 7 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A0B3F: _dl_init_paths (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x466103: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 8 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A0B21: _dl_init_paths (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x466103: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 9 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 10 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41C3AB: _int_malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41CEB4: tcache_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D70B: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 11 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D701: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 12 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D611: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 13 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x47487E: getrandom (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41A025: ptmalloc_init.part.0 (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41D804: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4A64DB: _dl_get_origin (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4659F6: _dl_non_dynamic_init (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4673F9: __libc_init_first (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403D14: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 1 errors in context 14 of 28:
+==82307== Syscall param set_robust_list(head) points to uninitialised byte(s)
+==82307==    at 0x464408: __tls_init_tp (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x404959: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==  Address 0x40006b0 is in the brk data segment 0x4000000-0x4000dbf
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 2 errors in context 15 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456D31: send (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401B3A: getUserName (server.c:46)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 2 errors in context 16 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x41D62E: malloc (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401A9C: getUserName (server.c:41)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 2 errors in context 17 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456C71: recv (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401A1F: getUserName (server.c:35)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 2 errors in context 18 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456D31: send (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4019EC: getUserName (server.c:32)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 2 errors in context 19 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456A9E: accept (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401F7F: startServer (server.c:118)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 9 errors in context 20 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x40E988: __vfprintf_internal (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40A86B: printf (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4021A1: startServer (server.c:147)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== 
+==82307== 9 errors in context 21 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456C71: recv (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x402062: startServer (server.c:132)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 12 errors in context 22 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x4550B4: select (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401EDB: startServer (server.c:109)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 18 errors in context 23 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x456D31: send (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4022B1: startServer (server.c:154)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== 
+==82307== 36 errors in context 24 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x402170: startServer (server.c:146)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== 
+==82307== 46 errors in context 25 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x401F40: startServer (server.c:115)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== 
+==82307== 99 errors in context 26 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x401912: containsUserName (server.c:21)
+==82307==    by 0x401A6F: getUserName (server.c:40)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== 
+==82307== 99 errors in context 27 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x40E988: __vfprintf_internal (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40A86B: printf (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4018F7: containsUserName (server.c:20)
+==82307==    by 0x401A6F: getUserName (server.c:40)
+==82307==    by 0x40201C: startServer (server.c:126)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created by a stack allocation
+==82307==    at 0x401B5C: startServer (server.c:53)
+==82307== 
+==82307== 
+==82307== 170 errors in context 28 of 28:
+==82307== Conditional jump or move depends on uninitialised value(s)
+==82307==    at 0x45421E: write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4145CC: _IO_file_write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x41367D: new_do_write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x414FD8: _IO_do_write (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x4157E2: _IO_file_overflow (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x411131: puts (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x401D85: startServer (server.c:101)
+==82307==    by 0x402343: main (server.c:170)
+==82307==  Uninitialised value was created
+==82307==    at 0x454EBB: brk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x454F53: sbrk (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x40489B: __libc_setup_tls (in /home/pijus/Desktop/MultiUserServer/server)
+==82307==    by 0x403C6F: (below main) (in /home/pijus/Desktop/MultiUserServer/server)
+==82307== 
+==82307== ERROR SUMMARY: 522 errors from 28 contexts (suppressed: 0 from 0)

@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1647095021 source:/home/pijus/Desktop/MultiUserServer/server.c
+	<stdio.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<string.h>
+	<fcntl.h>
+	<unistd.h>
+	<ctype.h>
+	<sys/types.h>
+	<netdb.h>
+	<stdlib.h>
+	<sys/types.h>
+	<netinet/in.h>
+
