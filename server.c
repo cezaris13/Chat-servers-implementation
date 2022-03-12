@@ -14,7 +14,7 @@
 #define MAX_USERNAME_SIZE 50
 #define MAX_USERS 50
 
-int containsUserName(char *searchedString,char *userNames[MAX_USERS]){
+int containsUserName(char *searchedString, char *userNames[MAX_USERS]){
     for(int i=0;i<MAX_USERS;i++){
         if(userNames[i]!=NULL&&strcmp(searchedString,userNames[i])==0){
             return 1;
@@ -37,7 +37,7 @@ void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
         else{
             bufUserName[strcspn(bufUserName, "\n")] = 0;
             if(!containsUserName(bufUserName, userNames)&& *userCount <= MAX_USERS){
-//                userNames[socketFd] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1));// su maxsizes pasizaisti
+                userNames[socketFd] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1));
                 strcpy(userNames[socketFd],bufUserName);
                 char *vardasOk = "VK\n\0";
                 (*userCount)++;
@@ -55,9 +55,6 @@ void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
 int startServer(char port[],char ip[]){
     int fdmax, listener, newfd, nbytes;
     char *userNames[MAX_USERS];
-    for(int i=0;i<MAX_USERS;i++){
-        userNames[i] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1));
-    }
     int userCount=0;
     fd_set read_fds, master;
 
@@ -144,16 +141,14 @@ int startServer(char port[],char ip[]){
                         close(i);
                         FD_CLR(i, &master);
                         userCount--;
-//                        free(userNames[i]);
+                        free(userNames[i]);
                     }
                     else{
                         for(int j = 0; j <= fdmax; j++){
                             if (FD_ISSET(j, &master)){
-                                printf("socket id: %d, userName: %s\n",j,userNames[j]);
                                 if (j != listener){
                                     char message[MAX_SIZE]="PRANESIMAS";
                                     strcat(strcat(strcat(strcat(message,userNames[i]),": "),buf),"\0");
-                                    printf("%d\n",strlen(message));
                                     printf("%s",message);
                                     if (send(j, message, strlen(message), 0) == -1){// send error here
                                         printf("send error\n");
