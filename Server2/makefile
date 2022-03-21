@@ -5,7 +5,7 @@
 # @version 0.1
 
 build:
-	gcc -g -rdynamic ./server.c -o server.o
+	gcc -g -rdynamic ./server.c ../Lib/Functions.c -o server.o
 #	gcc server.c -o server.o
 	./server.o
 buildClient:

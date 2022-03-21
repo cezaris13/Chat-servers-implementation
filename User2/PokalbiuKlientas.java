@@ -97,10 +97,9 @@ public class PokalbiuKlientas {
                     BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
                     while ((strLine = br.readLine()) != null){
-                        isvestis.println(strLine+"\0");                  
+                        isvestis.println(strLine);
                         System.out.println(strLine);
-
-                         isvestis.flush();
+                        isvestis.flush();
                     }  
                     System.out.println("thatsit");
                     isvestis.println("%END%\0");
