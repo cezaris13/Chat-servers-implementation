@@ -285,7 +285,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                                 }
                             }
                         }
-                        else{
+                        else if(strstr(buf,"PRANESIMAS") == NULL){
                             for(int j = 0; j <= fdmax; j++){
                                 if (FD_ISSET(j, &master)){
                                     if (j != ourFd && j!= otherFd){

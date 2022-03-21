@@ -265,7 +265,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                             sendFile(trimwhitespace(file),i);
                         }
                         else if(strstr(buf,"@")){// minor fixed there and we done
-                            char *file = buf+4;
+                            char *file = buf+4;//get giles fix!!!
                             printf("%s\n",file);
                             receiveFile(i,trimwhitespace(file));
                             sendFile(trimwhitespace(file),otherFd);
@@ -285,7 +285,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                                 }
                             }
                         }
-                        else{
+                        else if(strstr(buf,"PRANESIMAS") == NULL){
                             for(int j = 0; j <= fdmax; j++){
                                 if (FD_ISSET(j, &master)){
                                     if (j != ourFd && j!= otherFd){
