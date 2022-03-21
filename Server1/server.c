@@ -204,15 +204,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
 
     initializeSocket(thisPort,ip,&master,&listener,&fdmax);
     int ourFd = listener;
-    /* initializeSocket(otherPort,ip,&master,&listener,&fdmax); */
     int otherFd;
-    int otherAccept = -1;
-    /* for (int i=strtol(port,NULL,10); i < strtol(port,NULL,10)+50; i++) { */
-    /*     char *pp = malloc(sizeof(char)*5); */
-    /*     snprintf (pp, sizeof(pp), "%d",i); */
-    /*     initializeSocket(pp,ip,&master,&listener1,&fdmax); */
-    /*     free(pp); */
-    /* } */
     int firstTime=1;
     while(1){
         read_fds = master;
@@ -275,7 +267,8 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                         else if(strstr(buf,"@")){
                             char *file = buf+4;
                             printf("%s\n",file);
-                            receiveFile(otherFd,trimwhitespace(file));
+                            receiveFile(i,trimwhitespace(file));
+                            sendFile(trimwhitespace(file),otherFd);
                         }
                         else if(strstr(buf,"FAILAS") && otherServerConnected){
                             char *file = buf+7;

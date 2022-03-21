@@ -204,16 +204,16 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
 
     initializeSocket(thisPort,ip,&master,&listener,&fdmax);
     int ourFd = listener;
-    /* initializeSocket(otherPort,ip,&master,&listener,&fdmax); */
     int otherFd;
-    int otherAccept = -1;
-    /* for (int i=strtol(port,NULL,10); i < strtol(port,NULL,10)+50; i++) { */
-    /*     char *pp = malloc(sizeof(char)*5); */
-    /*     snprintf (pp, sizeof(pp), "%d",i); */
-    /*     initializeSocket(pp,ip,&master,&listener1,&fdmax); */
-    /*     free(pp); */
-    /* } */
-    int firstTime=1;
+    char sth[MAX_SIZE];
+    printf("waiting for the other server...");
+    scanf("%99[^\n]%*c", sth);
+    otherFd = initializeClient(ip,otherPort);
+    FD_SET(otherFd, &master);
+    if (otherFd > fdmax){
+        fdmax = otherFd;
+    }
+    int firstTime = 1;
     while(1){
         read_fds = master;
         if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1){
@@ -229,16 +229,8 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                         printf("accept error\n");
                     }
                     else{
-                        if(firstTime==1){
-                            char sth[MAX_SIZE];
+                        if(firstTime == 1){
                             firstTime = 0;
-                            printf("waiting for the other server...");
-                            scanf("%99[^\n]%*c", sth);
-                            otherFd = initializeClient(ip,otherPort);
-                            FD_SET(otherFd, &master);
-                            if (otherFd > fdmax){
-                                fdmax = otherFd;
-                            }
                         }
                         else{
                             FD_SET(newfd, &master);
@@ -272,10 +264,11 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                             printf("%s\n",file);
                             sendFile(trimwhitespace(file),i);
                         }
-                        else if(strstr(buf,"@")){
+                        else if(strstr(buf,"@")){// minor fixed there and we done
                             char *file = buf+4;
                             printf("%s\n",file);
-                            receiveFile(otherFd,trimwhitespace(file));
+                            receiveFile(i,trimwhitespace(file));
+                            sendFile(trimwhitespace(file),otherFd);
                         }
                         else if(strstr(buf,"FAILAS") && otherServerConnected){
                             char *file = buf+7;
