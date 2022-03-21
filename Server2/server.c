@@ -71,37 +71,6 @@ void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
     }
 }
 
-/* void receiveFile(int socketFd, char *newFile){ */
-/*     FILE *fp; */
-/*     fp = fopen(newFile, "w"); */
-/*     char *message = malloc(sizeof(char)*MAX_SIZE); */
-/*     strcat(strcat(strcpy(message,"GAUTIFAILA"),newFile),"\n\0"); */
-/*     sendMessage(socketFd, message); */
-
-/*     char buf[MAX_SIZE]; */
-/*     recv(socketFd, buf, sizeof buf, 0); */
-/*     while(strstr(buf,"%END%\0")==NULL){ */
-/*         printf("%s\n",buf); */
-/*         fputs(buf,fp); */
-/*         recv(socketFd, buf, sizeof buf, 0); */
-/*     } */
-/*     fclose(fp); */
-/*     free(message); */
-/* } */
-/* void receiveFileFromServer(int socketFd, char *newFile){ */
-/*     FILE *fp; */
-/*     fp = fopen(newFile, "w"); */
-/*     char buf[MAX_SIZE]; */
-/*     recv(socketFd, buf, sizeof buf, 0); */
-/*     printf("rev"); */
-/*     while(strstr(buf,"%END%\0")==NULL){ */
-/*         printf("%s\n",buf); */
-/*         fputs(buf,fp); */
-/*         recv(socketFd, buf, sizeof buf, 0); */
-/*     } */
-/*     fclose(fp); */
-/* } */
-
 void sendFile(char* filePath, int destSocket){
     FILE *fp;
     fp = fopen(filePath, "r");
@@ -296,10 +265,9 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                             printf("%s\n",file);
                             sendFile(trimwhitespace(file),i);
                         }
-                        else if(strstr(buf,"@")){// minor fixed there and we done
+                        else if(strstr(buf,"@")){
                             char *file = buf+4;
                             char *ff = trimwhitespace(file);
-                            /* sendFileToServer(trimwhitespace(file),otherFdActive,i); */
                             char *message = malloc(sizeof(char)*MAX_SIZE);
                             strcpy(message,"");
                             strcat(strcat(strcpy(message,"FAILAS"),ff),"\n\0");
@@ -334,7 +302,6 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                             }
                         }
                         else if(fileReceiving == 1){
-                            /* buf[strcspn(buf, "\n")] = 0; */
                             char *result = (char *)malloc(MAX_SIZE);
                             strcpy(result,buf);
 
@@ -343,9 +310,9 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                             free(result);
                         }
                         else if(fileSending == 1){
-                            /* buf[strcspn(buf, "\n")] = 0; */
                             char *result = (char *)malloc(MAX_SIZE);
                             strcpy(result,buf);
+                            strcat(result,"\n");
                             printf("sending %s\n",result);
                             sendMessage(otherFdActive,result);
                             free(result);
@@ -368,7 +335,9 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                                 }
                             }
                         }
-                        buf[0]='\0';
+                        for (int i =0; i<MAX_SIZE; i++) {
+                            buf[i]='\0';
+                        }
                     }
                 }
             }
