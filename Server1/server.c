@@ -71,23 +71,49 @@ void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
     }
 }
 
-void receiveFile(int socketFd, char *newFile){
-    FILE *fp;
-    fp = fopen(newFile, "w");
-    char *message = malloc(sizeof(char)*MAX_SIZE);
-    strcat(strcat(strcpy(message,"GAUTIFAILA"),newFile),"\n\0");
-    sendMessage(socketFd, message);
+/* void receiveFile(int socketFd, char *newFile){ */
+/*     FILE *fp; */
+/*     fp = fopen(newFile, "w"); */
+/*     char *message = malloc(sizeof(char)*MAX_SIZE); */
+/*     strcat(strcat(strcpy(message,"GAUTIFAILA"),newFile),"\n\0"); */
+/*     sendMessage(socketFd, message); */
 
-    char buf[MAX_SIZE];
-    recv(socketFd, buf, sizeof buf, 0);
-    while(strstr(buf,"%END%\0")==NULL){
-        printf("%s\n",buf);
-        fputs(buf,fp);
-        recv(socketFd, buf, sizeof buf, 0);
-    }
-    fclose(fp);
+/*     char buf[MAX_SIZE]; */
+/*     recv(socketFd, buf, sizeof buf, 0); */
+/*     while(strstr(buf,"%END%\0")==NULL){ */
+/*         printf("%s\n",buf); */
+/*         fputs(buf,fp); */
+/*         recv(socketFd, buf, sizeof buf, 0); */
+/*     } */
+/*     fclose(fp); */
+/*     free(message); */
+/* } */
+
+void sendFileToServer(char* filePath, int destSocket,int sourceSocket){
+    char *message = malloc(sizeof(char)*MAX_SIZE);
+    strcpy(message,"");
+    strcat(strcat(strcpy(message,"FAILAS"),filePath),"\n\0");
+    sendMessage(destSocket, message);
+    free(message);
+    message = malloc(sizeof(char)*MAX_SIZE);
+    strcpy(message,"");
+    strcat(strcat(strcpy(message,"GAUTIFAILA"),filePath),"\n\0");
+    sendMessage(sourceSocket, message);
     free(message);
 }
+
+/* void receiveFileFromServer(int socketFd, char *newFile){ */
+/*     FILE *fp; */
+/*     fp = fopen(newFile, "w"); */
+/*     char buf[MAX_SIZE]; */
+/*     recv(socketFd, buf, sizeof buf, 0); */
+/*     while(strstr(buf,"%END%\0")==NULL){ */
+/*         printf("%s\n",buf); */
+/*         fputs(buf,fp); */
+/*         recv(socketFd, buf, sizeof buf, 0); */
+/*     } */
+/*     fclose(fp); */
+/* } */
 
 void sendFile(char* filePath, int destSocket){
     FILE *fp;
@@ -194,19 +220,23 @@ int initializeClient(char ip[],char port[]){
 int startServer(char ip[],char thisPort[],char otherPort[]){
     int fdmax=-1, listener, newfd, nbytes;
     char *userNames[MAX_USERS];
-    int userCount=0, otherServerConnected = 0;
+    int userCount=0;
     fd_set read_fds, master;
     for(int i=0;i<MAX_USERS;i++){
         userNames[i] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1));
     }
-    char buf[MAX_SIZE];
     struct sockaddr_storage remoteaddr;
 
     initializeSocket(thisPort,ip,&master,&listener,&fdmax);
     int ourFd = listener;
     int otherFd;
+    int otherFdActive;
     int firstTime=1;
+    int fileReceiving = 0;
+    int fileSending = 0;
+    FILE *fp;
     while(1){
+        char buf[MAX_SIZE];
         read_fds = master;
         if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1){
             printf("select error\n");
@@ -227,10 +257,16 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                             printf("waiting for the other server...");
                             scanf("%99[^\n]%*c", sth);
                             otherFd = initializeClient(ip,otherPort);
+                            FD_SET(newfd, &master);
                             FD_SET(otherFd, &master);
+                            otherFdActive  = newfd;
                             if (otherFd > fdmax){
                                 fdmax = otherFd;
                             }
+                            if (newfd > fdmax){
+                                fdmax = newfd;
+                            }
+
                         }
                         else{
                             FD_SET(newfd, &master);
@@ -253,12 +289,8 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                         FD_CLR(i, &master);
                         userCount--;
                         userNames[i][0]='\0';
-                        if(i == otherFd){
-                            otherServerConnected = 0;
-                        }
                     }
                     else{
-                        buf[strcspn(buf, "\n")] = 0;
                         if(strstr(buf,"#get")){
                             char *file = buf+4;
                             printf("%s\n",file);
@@ -267,17 +299,34 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                         else if(strstr(buf,"@")){
                             char *file = buf+4;
                             printf("%s\n",file);
-                            receiveFile(i,trimwhitespace(file));
-                            sendFile(trimwhitespace(file),otherFd);
+                            char *ff = trimwhitespace(file);
+                            /* sendFileToServer(trimwhitespace(file),otherFdActive,i); */
+                            char *message = malloc(sizeof(char)*MAX_SIZE);
+                            strcpy(message,"");
+                            strcat(strcat(strcpy(message,"FAILAS"),ff),"\n\0");
+                            sendMessage(otherFdActive, message);
+                            free(message);
+                            message = malloc(sizeof(char)*MAX_SIZE);
+                            strcpy(message,"");
+                            strcat(strcat(strcpy(message,"GAUTIFAILA"),ff),"\n\0");
+                            sendMessage(i, message);
+                            free(message);
+                            fileSending=1;
                         }
-                        else if(strstr(buf,"FAILAS") && otherServerConnected){
-                            char *file = buf+7;
-                            receiveFile(otherFd, trimwhitespace(file));
+                        else if(strstr(buf,"FAILAS")){
+                            fileReceiving = 1;
+                            char *file = buf+6;
+                            printf("%s",file);
+                            fp = fopen(trimwhitespace(file), "w");
+                        }
+                        else if(strstr(buf,"%END%") && fileReceiving == 1){
+                            fileReceiving = 0;
+                            fclose(fp);
                             for(int j = 0; j <= fdmax; j++){
                                 if (FD_ISSET(j, &master)){
                                     if (j != ourFd && j != otherFd){
                                         char *message = malloc(sizeof(char)*MAX_SIZE);
-                                        strcat(strcat(strcpy(message,"Gautas failas: "),file),"\n\0");
+                                        strcat(strcat(strcpy(message,"Gautas failas: "),""),"\n\0");
                                         printf("%s",message);
                                         sendMessage(j,message);
                                         free(message);
@@ -285,7 +334,26 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                                 }
                             }
                         }
-                        else if(strstr(buf,"PRANESIMAS") == NULL){
+                        else if(fileReceiving == 1){
+                            /* buf[strcspn(buf, "\n")] = 0; */
+
+                            fputs(buf,fp);
+                            printf("receiving %s",buf);
+                        }
+                        else if(fileSending == 1){
+                            /* buf[strcspn(buf, "\n")] = 0; */
+                            char *result = (char *)malloc(MAX_SIZE);
+                            strcpy(result,buf);
+                            printf("sending %s\n",result);
+                            sendMessage(otherFdActive,result);
+                            free(result);
+                        }
+                        else if(strstr(buf,"%END%") && fileSending == 1){
+                            fileSending = 0;
+                        }
+
+                        else if(strstr(buf,"PRANESIMAS") == NULL && fileReceiving == 0 && fileSending == 0){
+                            buf[strcspn(buf, "\n")] = 0;
                             for(int j = 0; j <= fdmax; j++){
                                 if (FD_ISSET(j, &master)){
                                     if (j != ourFd && j!= otherFd){
@@ -299,6 +367,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                                 }
                             }
                         }
+                        buf[0]='\0';
                     }
                 }
             }

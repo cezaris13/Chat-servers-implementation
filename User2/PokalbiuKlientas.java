@@ -98,8 +98,10 @@ public class PokalbiuKlientas {
 
                     while ((strLine = br.readLine()) != null){
                         isvestis.println(strLine);
+                        isvestis.flush();
                     }
                     isvestis.println("%END%");
+                    isvestis.flush();
                     fstream.close();
                 }
                 else if(tekstas.startsWith("FAILAS")){

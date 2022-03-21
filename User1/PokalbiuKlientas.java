@@ -97,9 +97,14 @@ public class PokalbiuKlientas {
                     BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
                     while ((strLine = br.readLine()) != null){
-                        isvestis.println(strLine);
-                    }
-                    isvestis.println("%END%");
+                        isvestis.println(strLine+"\0");                  
+                        System.out.println(strLine);
+
+                         isvestis.flush();
+                    }  
+                    System.out.println("thatsit");
+                    isvestis.println("%END%\0");
+                    isvestis.flush();
                     fstream.close();
                 }
                 else if(tekstas.startsWith("FAILAS")){
