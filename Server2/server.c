@@ -71,7 +71,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                     }
                 }
                 else{
-                    HandleReceive(i,&userCount,userNames,otherFdActive,&fileSending,&fileReceiving,&fp,otherFd,ourFd,fdmax,master);
+                    HandleReceive(i,&userCount,userNames,otherFdActive,&fileSending,&fileReceiving,&fp,otherFd,ourFd,fdmax, &master);
                 }
             }
         }

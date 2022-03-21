@@ -196,7 +196,7 @@ int initializeClient(char ip[],char port[]){
     return socketId;
 }
 
-void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServerFd,int *fileSending,int *fileReceiving,FILE **fp,int otherFd,int ourFd, int fdmax, fd_set master){
+void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServerFd,int *fileSending,int *fileReceiving,FILE **fp,int otherFd,int ourFd, int fdmax, fd_set *master){
     int nbytes;
     char buf[MAX_SIZE];
     if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0){
@@ -207,7 +207,7 @@ void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServ
             printf("recv error\n");
         }
         close(i);
-        FD_CLR(i, &master);
+        FD_CLR(i, master);
         (*userCount)--;
         userNames[i][0]='\0';
     }
@@ -243,10 +243,12 @@ void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServ
             (*fileReceiving) = 0;
             char *result = (char *)malloc(MAX_SIZE);
             strcpy(result,buf);
-            fputs(result,(*fp));
+            char *noEnd = strremove(result,"%END%");
+            fputs(noEnd,(*fp));
+            printf("receiving %s",noEnd);
             fclose(*fp);
             for(int j = 0; j <= fdmax; j++){
-                if (FD_ISSET(j, &master)){
+                if (FD_ISSET(j, master)){
                     if (j != ourFd && j != otherFd){
                         char *message = malloc(sizeof(char)*MAX_SIZE);
                         strcat(strcat(strcpy(message,"Gautas failas: "),""),"\n\0");
@@ -261,8 +263,9 @@ void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServ
         else if((*fileReceiving) == 1){
             char *result = (char *)malloc(MAX_SIZE);
             strcpy(result,buf);
-            fputs(result,(*fp));
-            printf("receiving %s",result);
+            char *noEnd = strremove(result,"%END%");
+            fputs(noEnd,(*fp));
+            printf("receiving %s",noEnd);
             free(result);
         }
         else if(strstr(buf,"%END%") && (*fileSending) == 1){
@@ -283,7 +286,7 @@ void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServ
         else if(strstr(buf,"PRANESIMAS") == NULL && (*fileReceiving) == 0 && (*fileSending) == 0){
             buf[strcspn(buf, "\n")] = 0;
             for(int j = 0; j <= fdmax; j++){
-                if (FD_ISSET(j, &master)){
+                if (FD_ISSET(j, master)){
                     if (j != ourFd && j!= otherFd){
                         printf("%d\n",j);
                         char *message = malloc(sizeof(char)*MAX_SIZE);// problem with memory 32 crashes

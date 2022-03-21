@@ -33,7 +33,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
     int firstTime=1;
     int fileReceiving = 0;
     int fileSending = 0;
-    FILE *fp;
+    FILE *fp = NULL;
     while(1){
         read_fds = master;
         if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1){
@@ -75,7 +75,9 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                         }
                     }
                 }
-                HandleReceive(i,&userCount,userNames,otherFdActive,&fileSending,&fileReceiving,&fp,otherFd,ourFd,fdmax,master);
+                else{
+                    HandleReceive(i,&userCount,userNames,otherFdActive,&fileSending,&fileReceiving,&fp,otherFd,ourFd,fdmax, &master);
+                }
             }
         }
     }
