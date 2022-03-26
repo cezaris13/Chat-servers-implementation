@@ -81,19 +81,6 @@ void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
     }
 }
 
-void sendFileToServer(char* filePath, int destSocket,int sourceSocket){
-    char *message = malloc(sizeof(char)*MAX_SIZE);
-    strcpy(message,"");
-    strcat(strcat(strcpy(message,"FAILAS"),filePath),"\n\0");
-    sendMessage(destSocket, message);
-    free(message);
-    message = malloc(sizeof(char)*MAX_SIZE);
-    strcpy(message,"");
-    strcat(strcat(strcpy(message,"GAUTIFAILA"),filePath),"\n\0");
-    sendMessage(sourceSocket, message);
-    free(message);
-}
-
 void sendFile(char* filePath, int destSocket){
     FILE *fp;
     fp = fopen(filePath, "r");
@@ -196,7 +183,20 @@ int initializeClient(char ip[],char port[]){
     return socketId;
 }
 
-void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServerFd,int *fileSending,int *fileReceiving,FILE **fp,int otherFd,int ourFd, int fdmax, fd_set *master){
+void HandleReceive(
+    int i,
+    int *userCount,
+    char *userNames[MAX_SIZE],
+    int otherServerFd,
+    int *fileSending,
+    int *fileReceiving,
+    FILE **fp,
+    int otherFd,
+    int ourFd,
+    int fdmax,
+    fd_set *master,
+    char **fileName,
+    char *ourServerName){
     int nbytes;
     char buf[MAX_SIZE];
     if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0){
@@ -212,7 +212,7 @@ void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServ
         userNames[i][0]='\0';
     }
     else{
-        printf("got bits:%s\n",buf);// add self send
+        printf("got bits:%s\n",buf);
         if(strstr(buf,"#get")){
             char *file = buf+4;
             printf("%s\n",file);
@@ -220,45 +220,44 @@ void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServ
         }
         else if(strstr(buf,"@")){
             char *file = buf+4;
-            char *ff = trimwhitespace(file);
+            char *ff = trimwhitespace(file);// check if contains newline, then
             char *message = malloc(sizeof(char)*MAX_SIZE);
             strcpy(message,"");
             strcat(strcat(strcpy(message,"FAILAS"),ff),"\n\0");
-            sendMessage(otherServerFd, message);
+            if(strstr(buf,ourServerName)){
+                (*fileReceiving)=1;
+                printf("%s\n",file);
+                strcpy(*fileName,file);
+                (*fp) = fopen(trimwhitespace(file), "w");
+            }
+            else{
+                sendMessage(otherServerFd, message);
+                (*fileSending)=1;
+            }
             free(message);
             message = malloc(sizeof(char)*MAX_SIZE);
             strcpy(message,"");
             strcat(strcat(strcpy(message,"GAUTIFAILA"),ff),"\n\0");
             sendMessage(i, message);
             free(message);
-            (*fileSending)=1;
         }
         else if(strstr(buf,"FAILAS")){
             (*fileReceiving) = 1;
             char *file = buf+6;
             printf("%s\n",file);
-            (*fp) = fopen(trimwhitespace(file), "w");
-        }
-        else if(strstr(buf,"%END%") && (*fileReceiving) == 1){
-            (*fileReceiving) = 0;
-            char *result = (char *)malloc(MAX_SIZE);
-            strcpy(result,buf);
-            char *noEnd = strremove(result,"%END%");
-            fputs(noEnd,(*fp));
-            printf("receiving %s",noEnd);
-            fclose(*fp);
-            for(int j = 0; j <= fdmax; j++){
-                if (FD_ISSET(j, master)){
-                    if (j != ourFd && j != otherFd){
-                        char *message = malloc(sizeof(char)*MAX_SIZE);
-                        strcat(strcat(strcpy(message,"Gautas failas: "),""),"\n\0");
-                        printf("%s",message);
-                        sendMessage(j,message);
-                        free(message);
-                    }
-                }
+
+            char *file1 = malloc(sizeof(char)*MAX_SIZE);
+            strcpy(file1,file);
+            file1[strcspn(file, "\n")] = 0;
+            printf("file 1: %s\n",file1);
+            strcpy(*fileName,file1);
+            (*fp) = fopen(trimwhitespace(*fileName), "w");
+            printf("%d\n",strlen(file)- strlen(file1));
+            if(strlen(file)!= strlen(file1) && strlen(file) - strlen(file1) != 1){
+                char *fileContent = file+ strlen(file1);
+                char *noEnd = strremove(fileContent,"%END%");
+                fputs(noEnd,(*fp));
             }
-            free(result);
         }
         else if((*fileReceiving) == 1){
             char *result = (char *)malloc(MAX_SIZE);
@@ -267,21 +266,34 @@ void HandleReceive(int i,int *userCount, char *userNames[MAX_SIZE],int otherServ
             fputs(noEnd,(*fp));
             printf("receiving %s",noEnd);
             free(result);
-        }
-        else if(strstr(buf,"%END%") && (*fileSending) == 1){
-            char *result = (char *)malloc(MAX_SIZE);
-            strcpy(result,buf);
-            printf("sending %s\n",result);
-            sendMessage(otherServerFd,result);
-            free(result);
-            (*fileSending) = 0;
+            if(strstr(buf,"%END%")){
+                (*fileReceiving) = 0;
+                fclose(*fp);
+                for(int j = 0; j <= fdmax; j++){
+                    if (FD_ISSET(j, master)){
+                        if (j != ourFd && j != otherFd){
+                            char *message = malloc(sizeof(char)*MAX_SIZE);
+                            strcat(strcat(strcpy(message,"PRANESIMASGautas failas: "),*fileName),"\n\0");
+                            printf("%s",message);
+                            sendMessage(j,message);
+                            free(message);
+                        }
+                    }
+                }
+                for (int i =0; i<MAX_SIZE; i++) {
+                    (*fileName)[i]='\0';
+                }
+            }
         }
         else if((*fileSending) == 1){
             char *result = (char *)malloc(MAX_SIZE);
             strcpy(result,buf);
             printf("sending %s\n",result);
-            sendMessage(otherServerFd,result);
+            sendMessage(otherServerFd, result);
             free(result);
+            if(strstr(buf,"%END%")){
+                (*fileSending) = 0;
+            }
         }
         else if(strstr(buf,"PRANESIMAS") == NULL && (*fileReceiving) == 0 && (*fileSending) == 0){
             buf[strcspn(buf, "\n")] = 0;

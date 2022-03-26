@@ -13,7 +13,7 @@
 #define MAX_SIZE 1024
 #define MAX_USERNAME_SIZE 50
 #define MAX_USERS 50
-
+#define OUR_SERVER_NAME "s2"
 #include "../Lib/Functions.h"
 
 int startServer(char ip[],char thisPort[],char otherPort[]){
@@ -25,6 +25,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
     int otherFdActive, otherFd, fileReceiving = 0, firstTime = 1, fileSending = 0;
     char sth[MAX_SIZE];
     FILE *fp = NULL;
+    char *fileName = malloc(sizeof(char)*MAX_SIZE);
     for(int i=0;i<MAX_USERS;i++){
         userNames[i] = malloc(sizeof(char)*(MAX_USERNAME_SIZE+1));
     }
@@ -71,7 +72,7 @@ int startServer(char ip[],char thisPort[],char otherPort[]){
                     }
                 }
                 else{
-                    HandleReceive(i,&userCount,userNames,otherFdActive,&fileSending,&fileReceiving,&fp,otherFd,ourFd,fdmax, &master);
+                    HandleReceive(i,&userCount,userNames,otherFdActive,&fileSending,&fileReceiving,&fp,otherFd,ourFd,fdmax, &master,&fileName,OUR_SERVER_NAME);
                 }
             }
         }
