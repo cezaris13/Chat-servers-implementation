@@ -2,6 +2,7 @@
 #define MY_FUNC2_H
 #define MAX_USERS 50
 #define MAX_SIZE 1024
+#include "Functions.h"
 #include <stdio.h>
 #include <sys/select.h>
 char *trimwhitespace(char *str);
