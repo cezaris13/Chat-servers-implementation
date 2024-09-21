@@ -2,12 +2,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
 import javax.swing.*;
 
 /**
  * Client:
- * 1) Receives the message "SEND_NAME" from the server (repeatedly, until a
- * valid name is provided);
+
  * 2) If the name is accepted, receives "NAME_OK" from the server;
  * 3) ... then the client can send messages, which the server distributes to
  * everyone.
@@ -37,7 +44,7 @@ public class ChatClient {
     private String showIPAndPortDialog() {
         return JOptionPane.showInputDialog(
                 frame,
-                "Enter server IP and port:",
+                "Enter server IP and port separated by space (ex: 127.0.0.1 20000):",
                 "IP and port",
                 JOptionPane.QUESTION_MESSAGE);
     }
@@ -77,47 +84,39 @@ public class ChatClient {
             System.out.println("Server ---> Client : '" + bufferedReaderText + "'");
             System.out.println(bufferedReaderText.length());
 
-            switch (bufferedReaderText) {
-                case bufferedReaderText.startsWith("SENDNAME"):
-                    printWriter.println(showEnterNameDialog());
-                    break;
-                case bufferedReaderText.startsWith("VK"):
-                    textField.setEditable(true);
-                    break;
-                case bufferedReaderText.startsWith("PRANESIMAS"):
-                    messageTextArea.append(bufferedReaderText.substring(10) + "\n");
-                    break;
-                case bufferedReaderText.startsWith("FAILAS"):
-                    shouldReceiveFile = true;
-                    break;
-                case bufferedReaderText.startsWith("GAUTIFAILA"):
-                    receiveFile(bufferedReaderText);
-                    break;
-                default:
-                    break;
+            if (bufferedReaderText.startsWith("SENDNAME")) {
+                printWriter.println(showEnterNameDialog());
+            } else if (bufferedReaderText.startsWith("VK")) {
+                textField.setEditable(true);
+            } else if (bufferedReaderText.startsWith("MESSAGE")) {
+                messageTextArea.append(bufferedReaderText.substring(7) + "\n");
+            } else if (bufferedReaderText.startsWith("FILE")) {
+                shouldReceiveFile = true;
+            } else if (bufferedReaderText.startsWith("RECEIVEFILE")) {
+                receiveFile(bufferedReaderText);
             }
         }
+    }
 
-        private void receiveFile(String bufferedReaderText){
-            String fileName = bufferedReaderText.substring(10).trim();
-            String strLine;
-            File file = new File(fileName);
-            boolean isFileCreated = file.createNewFile();
+    private void receiveFile(String bufferedReaderText) throws IOException {
+        String fileName = bufferedReaderText.substring(12).trim();
+        String strLine;
+        File file = new File(fileName);
+        boolean isFileCreated = file.createNewFile();
 
-            FileInputStream stream = new FileInputStream(fileName);
+        FileInputStream stream = new FileInputStream(fileName);
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
 
-            while ((strLine = bufferedReader.readLine()) != null) {
-                printWriter.println(strLine);
-                System.out.println(strLine);
-                printWriter.flush();
-            }
-            System.out.println("that's it");
-            printWriter.println("%END%\0");
+        while ((strLine = bufferedReader.readLine()) != null) {
+            printWriter.println(strLine);
+            System.out.println(strLine);
             printWriter.flush();
-            stream.close();
         }
+        System.out.println("that's it");
+        printWriter.println("%END%\0");
+        printWriter.flush();
+        stream.close();
     }
 
     public static void main(String[] args) throws Exception {
