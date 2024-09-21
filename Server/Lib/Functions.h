@@ -1,9 +1,9 @@
 #ifndef MY_FUNC2_H
 #define MY_FUNC2_H
 
-#include "Functions.h"
 #include <stdio.h>
 #include <sys/select.h>
+#include "Functions.c"
 
 char* trimwhitespace(char* str);
 char* strremove(char* str, const char* sub);

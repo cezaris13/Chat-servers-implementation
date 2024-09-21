@@ -9,36 +9,48 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include "./Lib/Functions.h"
+
 #define MAX_SIZE 1024
 #define MAX_USERNAME_SIZE 50
 #define MAX_USERS 50
-#define OUR_SERVER_NAME "s2"
-#include "../Lib/Functions.h"
 
-int startServer(char ip[], char thisPort[], char otherPort[])
-{
+void waitForOtherServer(char ip[], char otherServerPort[], int* otherFd, int* fdmax, fd_set master) {
+    char sth[MAX_SIZE];
+    printf("waiting for the other server...");
+    scanf("%99[^\n]%*c", sth);
+    otherFd = initializeClient(ip, otherServerPort);
+    FD_SET(otherFd, &master);
+    if (otherFd > fdmax)
+        fdmax = otherFd;
+}
+
+int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirstServer) {
     int fdmax = -1, listener, newfd;
     char* userNames[MAX_USERS];
     int userCount = 0;
     fd_set read_fds, master;
     struct sockaddr_storage remoteaddr;
-    int otherFdActive, otherFd, fileReceiving = 0, firstTime = 1, fileSending = 0;
-    char sth[MAX_SIZE];
-    FILE* fp = NULL;
-    char* fileName = malloc(sizeof(char) * MAX_SIZE);
+
     for (int i = 0; i < MAX_USERS; i++)
         userNames[i] = malloc(sizeof(char) * (MAX_USERNAME_SIZE + 1));
 
-    initializeSocket(thisPort, ip, &master, &listener, &fdmax);
-    int ourFd = listener;
-    printf("waiting for the other server...");
-    scanf("%99[^\n]%*c", sth);
-    otherFd = initializeClient(ip, otherPort);
-    FD_SET(otherFd, &master);
-    if (otherFd > fdmax)
-        fdmax = otherFd;
+    char* fileName = malloc(sizeof(char) * (MAX_SIZE));
+    FILE* fp = NULL;
 
-    while (1) {
+    initializeSocket(serverPort, ip, &master, &listener, &fdmax);
+    int ourFd = listener;
+    int otherFd;
+    int otherFdActive;
+    int firstTime = 1;
+    int fileReceiving = 0;
+    int fileSending = 0;
+
+    if (isFirstServer == 0)
+        waitForOtherServer(ip, otherServerPort, &otherFd, &fdmax, master);
+
+    while(1){
         read_fds = master;
         if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
             printf("select error\n");
@@ -52,10 +64,9 @@ int startServer(char ip[], char thisPort[], char otherPort[])
             if (i != ourFd) {
                 HandleReceive(i, &userCount, userNames, otherFdActive, &fileSending,
                     &fileReceiving, &fp, otherFd, ourFd, fdmax, &master,
-                    &fileName, OUR_SERVER_NAME);
+                    &fileName, "s2");
                 continue;
             }
-
             socklen_t addrlen = sizeof remoteaddr;
             if ((newfd = accept(ourFd, (struct sockaddr*)&remoteaddr, &addrlen)) == -1) {
                 printf("accept error\n");
@@ -72,19 +83,28 @@ int startServer(char ip[], char thisPort[], char otherPort[])
             }
 
             firstTime = 0;
+
+            if (isFirstServer == 1)
+                waitForOtherServer(ip, otherServerPort, &otherFd, &fdmax, master);
+
             otherFdActive = newfd;
             FD_SET(newfd, &master);
+
             if (newfd > fdmax)
                 fdmax = newfd;
         }
     }
+
     return 0;
 }
 
 int main(int argc, char* argv[])
 {
-    if (argc == 3)
-        startServer("127.0.0.1", argv[1], argv[2]);
+    if (argc == 4) {
+        char* p;
+        long num = strtol(argv[3],&p, 10);
+        startServer("127.0.0.1", argv[1], argv[2],num);
+    }
     else
         printf("not all parameters are given");
 }
