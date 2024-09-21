@@ -197,7 +197,7 @@ int initializeClient(char ip[], char port[])
     return socketId;
 }
 
-void HandleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
+void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
     int otherServerFd, int* fileSending, int* fileReceiving,
     FILE** fp, int otherFd, int ourFd, int fdmax, fd_set* master,
     char** fileName, char* ourServerName)

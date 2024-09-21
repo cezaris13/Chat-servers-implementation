@@ -62,9 +62,12 @@ int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirs
                 continue;
 
             if (i != ourFd) {
-                HandleReceive(i, &userCount, userNames, otherFdActive, &fileSending,
+                char serverId = isFirstServer +'0';
+                char serverName[3]= "s";
+                strncat(serverName, &serverId, 1);
+                handleReceive(i, &userCount, userNames, otherFdActive, &fileSending,
                     &fileReceiving, &fp, otherFd, ourFd, fdmax, &master,
-                    &fileName, "s2");
+                    &fileName, serverName);
                 continue;
             }
             socklen_t addrlen = sizeof remoteaddr;
