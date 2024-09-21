@@ -18,9 +18,8 @@ char* strremove(char* str, const char* sub)
     size_t len = strlen(sub);
     if (len > 0) {
         char* p = str;
-        while ((p = strstr(p, sub)) != NULL) {
+        while ((p = strstr(p, sub)) != NULL)
             memmove(p, p + len, strlen(p + len) + 1);
-        }
     }
     return str;
 }
@@ -45,18 +44,15 @@ char* trimwhitespace(char* str)
 
 void sendMessage(int socketFd, char* message)
 {
-    if (send(socketFd, message, strlen(message), 0) == -1) {
+    if (send(socketFd, message, strlen(message), 0) == -1)
         printf("send error\n");
-    }
 }
 
 int containsUserName(char* searchedString, char* userNames[MAX_USERS])
 {
-    for (int i = 0; i < MAX_USERS; i++) {
-        if (userNames[i] != NULL && strcmp(searchedString, userNames[i]) == 0) {
+    for (int i = 0; i < MAX_USERS; i++)
+        if (userNames[i] != NULL && strcmp(searchedString, userNames[i]) == 0)
             return 1;
-        }
-    }
     return 0;
 }
 
@@ -68,20 +64,21 @@ void getUserName(int socketFd, int* userCount, char* userNames[MAX_USERS])
         sendMessage(socketFd, atsiuskVarda);
         if (recv(socketFd, bufUserName, sizeof bufUserName, 0) < 0) {
             printf("recv error\n");
-        } else {
-            bufUserName[strcspn(bufUserName, "\n")] = 0;
-            if (strlen(bufUserName) == 0) {
-                break;
-            }
-            if (!containsUserName(bufUserName, userNames) && *userCount <= MAX_USERS) {
-                strcpy(userNames[socketFd], bufUserName);
-                char vardasOk[] = "VK\n\0";
-                (*userCount)++;
-                sendMessage(socketFd, vardasOk);
-                break;
-            } else if (*userCount > MAX_USERS) {
-                break;
-            }
+            continue;
+        }
+
+        bufUserName[strcspn(bufUserName, "\n")] = 0;
+        if (strlen(bufUserName) == 0)
+            break;
+
+        if (!containsUserName(bufUserName, userNames) && *userCount <= MAX_USERS) {
+            strcpy(userNames[socketFd], bufUserName);
+            char vardasOk[] = "VK\n\0";
+            (*userCount)++;
+            sendMessage(socketFd, vardasOk);
+            break;
+        } else if (*userCount > MAX_USERS) {
+            break;
         }
     }
 }
@@ -205,11 +202,11 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
     int nbytes;
     char buf[MAX_SIZE];
     if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) {
-        if (nbytes == 0) {
+        if (nbytes == 0)
             printf("selectserver: socket %d hung up\n", i);
-        } else {
+        else
             printf("recv error\n");
-        }
+
         close(i);
         FD_CLR(i, master);
         (*userCount)--;
@@ -281,9 +278,9 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
                         }
                     }
                 }
-                for (int i = 0; i < MAX_SIZE; i++) {
+
+                for (int i = 0; i < MAX_SIZE; i++)
                     (*fileName)[i] = '\0';
-                }
             }
         } else if ((*fileSending) == 1) {
             char* result = (char*)malloc(MAX_SIZE);
@@ -313,8 +310,8 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
                 }
             }
         }
-        for (int i = 0; i < MAX_SIZE; i++) {
+
+        for (int i = 0; i < MAX_SIZE; i++)
             buf[i] = '\0';
-        }
     }
 }
