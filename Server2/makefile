@@ -1,18 +1,9 @@
-##
-# Project Title
-#
-# @file
-# @version 0.1
-
 build:
 	gcc -g -rdynamic ./server.c ../Lib/Functions.c -o server.o
-#	gcc server.c -o server.o
 	./server.o
 buildClient:
-	javac PokalbiuKlientas.java
-	java PokalbiuKlientas
+	javac ChatClient.java
+	java ChatClient
 
 launchClient:
-	java PokalbiuKlientas
-
-# end
+	java ChatClient

@@ -1,4 +1,3 @@
-#include "Functions.h"
 #include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -11,6 +10,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+
+#define MAX_USERS 50
 #define MAX_SIZE 1024
 
 char *strremove(char *str, const char *sub) {
@@ -55,7 +56,7 @@ int containsUserName(char *searchedString, char *userNames[MAX_USERS]){
 }
 
 void getUserName(int socketFd, int *userCount, char *userNames[MAX_USERS]){
-    char atsiuskVarda[]="ATSIUSKVARDA\n\0";
+    char atsiuskVarda[]="SENDNAME\n\0";
     while(1){
         char bufUserName[MAX_USERS];
         sendMessage(socketFd,atsiuskVarda);
@@ -252,7 +253,7 @@ void HandleReceive(
             printf("file 1: %s\n",file1);
             strcpy(*fileName,file1);
             (*fp) = fopen(trimwhitespace(*fileName), "w");
-            printf("%d\n",strlen(file)- strlen(file1));
+            printf("%lu\n",strlen(file)- strlen(file1));
             if(strlen(file)!= strlen(file1) && strlen(file) - strlen(file1) != 1){
                 char *fileContent = file+ strlen(file1);
                 char *noEnd = strremove(fileContent,"%END%");
