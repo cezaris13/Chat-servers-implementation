@@ -10,7 +10,7 @@ char* strremove(char* str, const char* sub);
 void sendMessage(int socketFd, char* message);
 int containsUserName(char* searchedString, char* userNames[MAX_USERS]);
 void getUserName(int socketFd, int* userCount, char* userNames[MAX_USERS]);
-void sendFileToServer(char* filePath, int destSocket, int sourceSocket);
+// void sendFileToServer(char* filePath, int destSocket, int sourceSocket);
 void sendFile(char* filePath, int destSocket);
 int initializeSocket(char port[], char ip[], fd_set* master, int* listener, int* fdmax);
 int initializeClient(char ip[], char port[]);

@@ -16,18 +16,8 @@
 #define MAX_USERNAME_SIZE 50
 #define MAX_USERS 50
 
-void waitForOtherServer(char ip[], char otherServerPort[], int* otherFd, int* fdmax, fd_set master) {
-    char sth[MAX_SIZE];
-    printf("waiting for the other server...");
-    scanf("%99[^\n]%*c", sth);
-    otherFd = initializeClient(ip, otherServerPort);
-    FD_SET(otherFd, &master);
-    if (otherFd > fdmax)
-        fdmax = otherFd;
-}
-
 int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirstServer) {
-    int fdmax = -1, listener, newfd;
+    int fdmax, listener, newfd;
     char* userNames[MAX_USERS];
     int userCount = 0;
     fd_set read_fds, master;
@@ -47,16 +37,26 @@ int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirs
     int fileReceiving = 0;
     int fileSending = 0;
 
-    if (isFirstServer == 0)
-        waitForOtherServer(ip, otherServerPort, &otherFd, &fdmax, master);
-
+    int clientFound = 0;
     while(1){
         read_fds = master;
+        if (!clientFound){
+            do {
+                otherFd = initializeClient(ip, otherServerPort);
+                printf("searching for other server\n");
+                usleep(1000000);
+            } while(otherFd == -1);
+            clientFound = 1;
+        }
+
         if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
             printf("select error\n");
             return -1;
         }
 
+        printf("fdmax %d\n", fdmax);
+        printf("listener %d\n", listener);
+        printf("master %s\n", master);
         for (int i = 0; i <= fdmax; i++) {
             if (!FD_ISSET(i, &read_fds))
                 continue;
@@ -86,10 +86,6 @@ int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirs
             }
 
             firstTime = 0;
-
-            if (isFirstServer == 1)
-                waitForOtherServer(ip, otherServerPort, &otherFd, &fdmax, master);
-
             otherFdActive = newfd;
             FD_SET(newfd, &master);
 
@@ -97,7 +93,6 @@ int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirs
                 fdmax = newfd;
         }
     }
-
     return 0;
 }
 
