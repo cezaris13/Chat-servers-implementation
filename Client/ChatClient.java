@@ -99,7 +99,8 @@ public class ChatClient {
     }
 
     private void receiveFile(String bufferedReaderText) throws IOException {
-        String fileName = bufferedReaderText.substring(12).trim();
+        System.out.println(bufferedReaderText);
+        String fileName = bufferedReaderText.substring(11).trim();
         String strLine;
         File file = new File(fileName);
         boolean isFileCreated = file.createNewFile();

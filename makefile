@@ -10,8 +10,9 @@ user2 = User2
 
 build:
 	gcc ${socketFolder}${socketFile} -o ${socketFolder}${socketExecutable}
-	${socketFolder}./${socketExecutable} ${firstPort} ${secondPort} 0 &
-	${socketFolder}./${socketExecutable} ${secondPort} ${firstPort} 1 &
+	cd ${socketFolder}; \
+	./${socketExecutable} ${firstPort} ${secondPort} 0 & \
+	./${socketExecutable} ${secondPort} ${firstPort} 1 &
 
 
 client:
@@ -31,6 +32,7 @@ terminate:
 
 
 debug:
-	gcc ${socketFolder}${socketFile} -Wall -ggdb3 -g -o ${socketExecutable}
-	valgring --track-origins=yes ${socketExecutable} ${firstPort} ${secondPort} 0 &
-	${socketFolder}./${socketExecutable} ${secondPort} ${firstPort} 1 &
+	cd ${socketFolder}; \
+	gcc ${socketFile} -Wall -ggdb3 -g -o ${socketExecutable};\
+	valgrind --track-origins=yes ./${socketExecutable} ${firstPort} ${secondPort} 0 &
+	./${socketExecutable} ${secondPort} ${firstPort} 1 &

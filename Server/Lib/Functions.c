@@ -94,6 +94,7 @@ void sendFile(char* filePath, int destinationSocket, char socketName[])
     while (feof(file) != 1) {
         char* buffer = malloc(sizeof(char*) * MAX_SIZE);
         fgets(buffer, MAX_SIZE, file);
+        printf("%s: %s\n", socketName, buffer);
         sendMessage(destinationSocket, buffer, socketName);
         free(buffer);
     }
@@ -196,7 +197,7 @@ int initializeClient(char ip[], char port[], char socketName[])
 }
 
 void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
-    int otherServerFd, int* fileSending, int* fileReceiving,
+    int secondarySocketFileDescriptorActive, int* fileSending, int* fileReceiving,
     FILE** fp, int secondarySocketFileDescriptor, int primarySocketFileDescriptor, int fileDescriptorMax, fd_set* master,
     char** fileName, char socketName[])
 {
@@ -221,7 +222,7 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
         printf("%s: %s\n", socketName, file);
         sendFile(trimwhitespace(file), i, socketName);
     } else if (strstr(buf, "@")) {
-        char* file = buf + 4;
+        char* file = buf + 8; // remove @ and socket name @Socket1 file.txt
         char* ff = trimwhitespace(file); // check if contains newline
         char* message = malloc(sizeof(char) * MAX_SIZE);
         strcpy(message, "");
@@ -230,9 +231,9 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
             (*fileReceiving) = 1;
             printf("%s: %s\n", socketName, file);
             strcpy(*fileName, file);
-            (*fp) = fopen(trimwhitespace(file), "w");
+            (*fp) = fopen(ff, "w");
         } else {
-            sendMessage(otherServerFd, message, socketName);
+            sendMessage(secondarySocketFileDescriptorActive, message, socketName);
             (*fileSending) = 1;
         }
         free(message);
@@ -243,7 +244,7 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
         free(message);
     } else if (strstr(buf, "FILE")) {
         (*fileReceiving) = 1;
-        char* file = buf + 6;
+        char* file = buf + 4;
         printf("%s: %s\n", socketName, file);
 
         char* file1 = malloc(sizeof(char) * MAX_SIZE);
@@ -290,7 +291,7 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
         char* result = (char*)malloc(MAX_SIZE);
         strcpy(result, buf);
         printf("%s: sending %s\n", socketName, result);
-        sendMessage(otherServerFd, result, socketName);
+        sendMessage(secondarySocketFileDescriptorActive, result, socketName);
         free(result);
         if (strstr(buf, "%END%"))
             *fileSending = 0;
@@ -314,5 +315,9 @@ void handleReceive(int i, int* userCount, char* userNames[MAX_SIZE],
             sendMessage(j, message, socketName);
             free(message);
         }
+
+
     }
+    for (int i =0; i<MAX_SIZE; i++)
+            buf[i]='\0';
 }
