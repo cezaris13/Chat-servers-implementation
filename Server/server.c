@@ -19,9 +19,7 @@
 int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[], char socketId[]) {
     char socketName[7]= "Socket ";
     strncat(socketName, &socketId[0], 1);
-    printf("%s\n",socketName);
-
-    int fileDescriptorMax, primarySocketFileDescriptor, newFileDescriptor;
+    int fileDescriptorMax = -1, primarySocketFileDescriptor, newFileDescriptor;
     char* userNames[MAX_USERS];
     int userCount = 0;
     fd_set readFileDescriptor, master;
@@ -49,7 +47,7 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
             do {
                 secondarySocketFileDescriptor = initializeClient(ip, secondarySocketPort, socketName);
                 printf("%s: searching for other socket\n", socketName);
-                usleep(1000000);
+                sleep(1);
             } while(secondarySocketFileDescriptor == -1);
 
             isSecondaryServerOnline = 1;

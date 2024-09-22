@@ -10,8 +10,9 @@ user2 = User2
 
 build:
 	gcc ${socketFolder}${socketFile} -o ${socketFolder}${socketExecutable}
-	${socketFolder}./${socketExecutable} ${firstPort} ${secondPort} 1 &
-	${socketFolder}./${socketExecutable} ${secondPort} ${firstPort} 0 &
+	${socketFolder}./${socketExecutable} ${firstPort} ${secondPort} 0 &
+	${socketFolder}./${socketExecutable} ${secondPort} ${firstPort} 1 &
+
 
 client:
 	cd ${clientFolder}; \
@@ -23,3 +24,13 @@ client:
 	cd ..; \
 	cd ${user2}; \
 	java ${chatClientName}&
+
+
+terminate: 
+	killall ${socketExecutable}
+
+
+debug:
+	gcc ${socketFolder}${socketFile} -Wall -ggdb3 -g -o ${socketExecutable}
+	valgring --track-origins=yes ${socketExecutable} ${firstPort} ${secondPort} 0 &
+	${socketFolder}./${socketExecutable} ${secondPort} ${firstPort} 1 &
