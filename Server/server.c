@@ -16,81 +16,83 @@
 #define MAX_USERNAME_SIZE 50
 #define MAX_USERS 50
 
-int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirstServer) {
-    int fdmax, listener, newfd;
+int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[], char socketId[]) {
+    char socketName[7]= "Socket ";
+    strncat(socketName, &socketId[0], 1);
+    printf("%s\n",socketName);
+
+    int fileDescriptorMax, primarySocketFileDescriptor, newFileDescriptor;
     char* userNames[MAX_USERS];
     int userCount = 0;
-    fd_set read_fds, master;
-    struct sockaddr_storage remoteaddr;
+    fd_set readFileDescriptor, master;
+    struct sockaddr_storage remoteAddress;
 
     for (int i = 0; i < MAX_USERS; i++)
         userNames[i] = malloc(sizeof(char) * (MAX_USERNAME_SIZE + 1));
 
     char* fileName = malloc(sizeof(char) * (MAX_SIZE));
-    FILE* fp = NULL;
+    FILE* file = NULL;
 
-    initializeSocket(serverPort, ip, &master, &listener, &fdmax);
-    int ourFd = listener;
-    int otherFd;
-    int otherFdActive;
-    int firstTime = 1;
+    initializeSocket(primarySocketPort, ip, &master, &primarySocketFileDescriptor, &fileDescriptorMax, socketName);
+    int secondarySocketFileDescriptor;
+    int secondarySocketFileDescriptorActive;
+    int isFirstTimeConnection = 1;
     int fileReceiving = 0;
     int fileSending = 0;
 
-    int clientFound = 0;
+    int isSecondaryServerOnline = 0;
     while(1){
-        read_fds = master;
-        if (!clientFound){
+        readFileDescriptor = master;
+        
+        // Run do while to search for secondary socket if it exists.
+        if (!isSecondaryServerOnline){
             do {
-                otherFd = initializeClient(ip, otherServerPort);
-                printf("searching for other server\n");
+                secondarySocketFileDescriptor = initializeClient(ip, secondarySocketPort, socketName);
+                printf("%s: searching for other socket\n", socketName);
                 usleep(1000000);
-            } while(otherFd == -1);
-            clientFound = 1;
+            } while(secondarySocketFileDescriptor == -1);
+
+            isSecondaryServerOnline = 1;
         }
 
-        if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
-            printf("select error\n");
+        if (select(fileDescriptorMax + 1, &readFileDescriptor, NULL, NULL, NULL) == -1) {
+            printf("%s: select error\n", socketName);
             return -1;
         }
 
-        printf("fdmax %d\n", fdmax);
-        printf("listener %d\n", listener);
-        printf("master %s\n", master);
-        for (int i = 0; i <= fdmax; i++) {
-            if (!FD_ISSET(i, &read_fds))
+        for (int i = 0; i <= fileDescriptorMax; i++) {
+            if (!FD_ISSET(i, &readFileDescriptor))
                 continue;
 
-            if (i != ourFd) {
-                char serverId = isFirstServer +'0';
-                char serverName[3]= "s";
-                strncat(serverName, &serverId, 1);
-                handleReceive(i, &userCount, userNames, otherFdActive, &fileSending,
-                    &fileReceiving, &fp, otherFd, ourFd, fdmax, &master,
-                    &fileName, serverName);
-                continue;
-            }
-            socklen_t addrlen = sizeof remoteaddr;
-            if ((newfd = accept(ourFd, (struct sockaddr*)&remoteaddr, &addrlen)) == -1) {
-                printf("accept error\n");
+            if (primarySocketFileDescriptor != i) {
+                handleReceive(i, &userCount, userNames, secondarySocketFileDescriptorActive, &fileSending,
+                    &fileReceiving, &file, secondarySocketFileDescriptor, primarySocketFileDescriptor, fileDescriptorMax, &master,
+                    &fileName, socketName);
                 continue;
             }
 
-            if (firstTime != 1) {
-                FD_SET(newfd, &master);
-                if (newfd > fdmax)
-                    fdmax = newfd;
-
-                getUserName(newfd, &userCount, userNames);
+            socklen_t addressLength = sizeof remoteAddress;
+            if ((newFileDescriptor = accept(primarySocketFileDescriptor, (struct sockaddr*)&remoteAddress, &addressLength)) == -1) {
+                printf("%s: accept error\n", socketName);
                 continue;
             }
 
-            firstTime = 0;
-            otherFdActive = newfd;
-            FD_SET(newfd, &master);
+            // If the connection 
+            if (!isFirstTimeConnection) {
+                FD_SET(newFileDescriptor, &master);
+                if (newFileDescriptor > fileDescriptorMax)
+                    fileDescriptorMax = newFileDescriptor;
 
-            if (newfd > fdmax)
-                fdmax = newfd;
+                getUserName(socketName, newFileDescriptor, &userCount, userNames);
+                continue;
+            }
+
+            isFirstTimeConnection = 0;
+            secondarySocketFileDescriptorActive = newFileDescriptor;
+            FD_SET(newFileDescriptor, &master);
+
+            if (newFileDescriptor > fileDescriptorMax)
+                fileDescriptorMax = newFileDescriptor;
         }
     }
     return 0;
@@ -98,11 +100,8 @@ int startServer(char ip[], char serverPort[], char otherServerPort[], int isFirs
 
 int main(int argc, char* argv[])
 {
-    if (argc == 4) {
-        char* p;
-        long num = strtol(argv[3],&p, 10);
-        startServer("127.0.0.1", argv[1], argv[2],num);
-    }
+    if (argc == 4)
+        startServer("127.0.0.1", argv[1], argv[2], argv[3]);
     else
-        printf("not all parameters are given");
+        printf("Not all parameters are given. Should enter: primaryServerPort, secondaryServerPort, socketId");
 }

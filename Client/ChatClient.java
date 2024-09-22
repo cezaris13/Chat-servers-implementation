@@ -15,8 +15,8 @@ import javax.swing.*;
 /**
  * Client:
 
- * 2) If the name is accepted, receives "NAME_OK" from the server;
- * 3) ... then the client can send messages, which the server distributes to
+ * 2) If the name is accepted, receives "NAME_OK" from the socket;
+ * 3) ... then the client can send messages, which the socket distributes to
  * everyone.
  */
 public class ChatClient {
@@ -44,7 +44,7 @@ public class ChatClient {
     private String showIPAndPortDialog() {
         return JOptionPane.showInputDialog(
                 frame,
-                "Enter server IP and port separated by space (ex: 127.0.0.1 20000):",
+                "Enter socket IP and port separated by space (ex: 127.0.0.1 20000):",
                 "IP and port",
                 JOptionPane.QUESTION_MESSAGE);
     }
@@ -59,8 +59,8 @@ public class ChatClient {
 
     private void run() throws IOException {
         // Logging in and UI inicialization
-        String serverAddressAndPort = showIPAndPortDialog();
-        String[] info = serverAddressAndPort.split("[ ]+");
+        String socketAddressAndPort = showIPAndPortDialog();
+        String[] info = socketAddressAndPort.split("[ ]+");
         Socket socket = new Socket(info[0], Integer.parseInt(info[1]));
         bufferedReader = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
