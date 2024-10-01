@@ -1,0 +1,8 @@
+SendName=SENDNAME
+NameOk=VK
+Message=MESSAGE
+File=FILE
+ReceiveFile=RECEIVEFILE
+End=%END%
+GetFile=#get
+SendFile=@

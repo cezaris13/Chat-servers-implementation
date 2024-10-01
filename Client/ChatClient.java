@@ -20,6 +20,7 @@ import javax.swing.*;
  * everyone.
  */
 public class ChatClient {
+    private String commandPath = "../../commands";
     BufferedReader bufferedReader;
     PrintWriter printWriter;
     JFrame frame = new JFrame("Chats");
@@ -57,7 +58,33 @@ public class ChatClient {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
+    public Map<String, String> loadEnv(String filePath) throws IOException {
+        Map<String, String> envVariables = new HashMap<>();
+
+        // Open and read the .env file line by line
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Skip empty lines and comments
+                if (line.trim().isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+
+                // Split the line by '=' to separate key and value
+                String[] keyValue = line.split("=", 2);
+                if (keyValue.length == 2) {
+                    String key = keyValue[0].trim();
+                    String value = keyValue[1].trim();
+                    envVariables.put(key, value);
+                }
+            }
+        }
+
+        return envVariables;
+    }
+
     private void run() throws IOException {
+        Map<String,String> commands = loadEnv(commandPath);
         // Logging in and UI inicialization
         String socketAddressAndPort = showIPAndPortDialog();
         String[] info = socketAddressAndPort.split("[ ]+");
@@ -74,7 +101,7 @@ public class ChatClient {
             System.out.println();
 
             if (shouldReceiveFile) {
-                if (bufferedReaderText.startsWith("%END%"))
+                if (bufferedReaderText.startsWith(commands.get("End")))
                     shouldReceiveFile = false;
                 else
                     messageTextArea.append(bufferedReaderText + "\n");
@@ -84,15 +111,15 @@ public class ChatClient {
             System.out.println("Server ---> Client : '" + bufferedReaderText + "'");
             System.out.println(bufferedReaderText.length());
 
-            if (bufferedReaderText.startsWith("SENDNAME")) {
+            if (bufferedReaderText.startsWith(commands.get("SendName"))) {
                 printWriter.println(showEnterNameDialog());
-            } else if (bufferedReaderText.startsWith("VK")) {
+            } else if (bufferedReaderText.startsWith(commands.get("NameOk"))) {
                 textField.setEditable(true);
-            } else if (bufferedReaderText.startsWith("MESSAGE")) {
-                messageTextArea.append(bufferedReaderText.substring(7) + "\n");
-            } else if (bufferedReaderText.startsWith("FILE")) {
+            } else if (bufferedReaderText.startsWith(commands.get("Message"))) {
+                messageTextArea.append(bufferedReaderText.substring(commands.get("Message").length()) + "\n");
+            } else if (bufferedReaderText.startsWith(commands.get("File"))) {
                 shouldReceiveFile = true;
-            } else if (bufferedReaderText.startsWith("RECEIVEFILE")) {
+            } else if (bufferedReaderText.startsWith(commands.get("ReceiveFile"))) {
                 receiveFile(bufferedReaderText);
             }
         }
@@ -100,7 +127,9 @@ public class ChatClient {
 
     private void receiveFile(String bufferedReaderText) throws IOException {
         System.out.println(bufferedReaderText);
-        String fileName = bufferedReaderText.substring(11).trim();
+        Map<String,String> commands = loadEnv(commandPath);
+
+        String fileName = bufferedReaderText.substring(commands.get("ReceiveFile").length()).trim();
         String strLine;
         File file = new File(fileName);
         boolean isFileCreated = file.createNewFile();
@@ -115,7 +144,6 @@ public class ChatClient {
             printWriter.flush();
         }
         System.out.println("that's it");
-        printWriter.println("%END%\0");
         printWriter.flush();
         stream.close();
     }
