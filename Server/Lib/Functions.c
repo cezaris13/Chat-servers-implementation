@@ -169,6 +169,7 @@ int initializeSocket(char port[], char ip[], fd_set *master, int *listener,
 
   if (getaddrinfo(ip, port, &hints, &servInfo) != 0) {
     printf("%s: getaddrinfo error\n", socketName);
+    freeaddrinfo(servInfo);
     return -1;
   }
 
@@ -221,6 +222,7 @@ int initializeClient(char ip[], char port[], char socketName[]) {
   hints.ai_socktype = SOCK_STREAM;
 
   if (getaddrinfo(ip, port, &hints, &servInfo) != 0) {
+    freeaddrinfo(servInfo);
     printf("%s: getaddrinfo error\n", socketName);
     return -1;
   }

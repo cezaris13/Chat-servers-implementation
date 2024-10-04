@@ -9,14 +9,26 @@ chatClientName = ChatClient
 user1 = User1
 user2 = User2
 
-build:
+buildServers:
 	gcc ${socketFolder}${socketFile} -o ${socketFolder}${socketExecutable}
 	cd ${socketFolder}; \
 	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 & \
 	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &
 
+buildServer:
+	gcc ${socketFolder}${socketFile} -o ${socketFolder}${socketExecutable}
+	cd ${socketFolder}; \
+	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 & \
+	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &
 
-client:
+buildClient:
+	cd ${clientFolder}; \
+	javac ${chatClientName}.java; \
+	cp ${chatClientName}.class ${user1}/${chatClientName}.class; \
+	cd ${user1}; \
+	java ${chatClientName} ${ip} ${firstPort}& \
+
+buildClients:
 	cd ${clientFolder}; \
 	javac ${chatClientName}.java; \
 	cp ${chatClientName}.class ${user1}/${chatClientName}.class; \
@@ -34,5 +46,5 @@ terminate:
 debug:
 	cd ${socketFolder}; \
 	gcc ${socketFile} -Wall -ggdb3 -g -o ${socketExecutable};\
-	valgrind --track-origins=yes ./${socketExecutable} ${firstPort} ${secondPort} 0 &
-	./${socketExecutable} ${secondPort} ${firstPort} 1 &
+	valgrind --track-origins=yes --leak-check=full  ./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 &
+	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &
