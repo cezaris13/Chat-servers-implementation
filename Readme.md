@@ -13,6 +13,6 @@ make terminate
 
 ## Features
 - Sending messages
-- Reading file content which is stored in the server (ex. #get`filename` ...) will read the file of the socket to which the user is connected.
-- File sending (ex. `@`filename`)
+- Reading file content which is stored in the server (ex. #get `filename` ...) will read the file of the socket to which the user is connected.
+- File sending to specified socket(ex. @Socket1 `filename`)
 
