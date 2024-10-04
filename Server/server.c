@@ -1,5 +1,4 @@
 #include <arpa/inet.h>
-#include <ctype.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -105,4 +104,23 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
 }
 
 int main(int argc, char *argv[]) {
+  if (argc == 5)
+    startServer(argv[1], argv[2], argv[3], argv[4]);
+  else
+    printf("Not all parameters are given. Should enter: primaryServerPort, "
+           "secondaryServerPort, socketId");
+    /*     EnvVar env_vars[MAX_ENV_VARS]; */
+
+    /* // Load the .env file */
+    /* int env_count = load_env("../commands", env_vars, MAX_ENV_VARS); */
+
+    /* if (env_count == -1) { */
+    /*     printf("Failed to load .env file\n"); */
+    /*     return 1; */
+    /* } */
+
+    /* // Get specific environment variables by key */
+    /* char *sendName = get_env_value("SendName", env_vars, env_count); */
+    /* printf("%s\n",sendName); */
+
 }

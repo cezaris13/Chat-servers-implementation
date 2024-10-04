@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <sys/select.h>
 
-
 char *trimwhitespace(char *str);
 char *strremove(char *str, const char *sub);
 void sendMessage(int socketFd, char *message, char socketName[]);

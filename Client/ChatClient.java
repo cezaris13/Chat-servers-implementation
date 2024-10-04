@@ -27,7 +27,20 @@ public class ChatClient {
     JTextField textField = new JTextField(40);
     JTextArea messageTextArea = new JTextArea(8, 40);
 
+    private String port;
+    private String ip;
+
     public ChatClient() {
+       initGui();
+    }
+
+    public ChatClient(String ip, String port) {
+        this.ip = ip;
+        this.port = port;
+        initGui();
+    }
+
+    private void initGui(){
         // GUI:
         textField.setEditable(false); // text field should not be editable until user logs in
         messageTextArea.setEditable(false); // message area should not be editable until user logs in
@@ -86,9 +99,15 @@ public class ChatClient {
     private void run() throws IOException {
         Map<String,String> commands = loadEnv(commandPath);
         // Logging in and UI inicialization
-        String socketAddressAndPort = showIPAndPortDialog();
-        String[] info = socketAddressAndPort.split("[ ]+");
-        Socket socket = new Socket(info[0], Integer.parseInt(info[1]));
+        Socket socket;
+        if (ip == null || port == null){
+            String socketAddressAndPort = showIPAndPortDialog();
+            String[] info = socketAddressAndPort.split("[ ]+");
+            socket = new Socket(info[0], Integer.parseInt(info[1]));
+        }
+        else {
+            socket = new Socket(ip, Integer.parseInt(port));
+        }
         bufferedReader = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
         printWriter = new PrintWriter(socket.getOutputStream(), true);
@@ -149,7 +168,7 @@ public class ChatClient {
     }
 
     public static void main(String[] args) throws Exception {
-        ChatClient chatClient = new ChatClient();
+        ChatClient chatClient = args.length == 2 ? new ChatClient(args[0],args[1]) : new ChatClient();
         chatClient.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         chatClient.frame.setVisible(true);
         chatClient.run();
