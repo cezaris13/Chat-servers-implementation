@@ -6,7 +6,7 @@
 #include <sys/select.h>
 
 char *trimwhitespace(char *str);
-char *strremove(char *str, const char *sub);
+char *strremove(char *str, char *sub);
 void sendMessage(int socketFd, char *message, char socketName[]);
 int containsUserName(char *searchedString, char *userNames[MAX_USERS]);
 void getUserName(char socketName[], int socketFd, int *userCount,

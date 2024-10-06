@@ -46,5 +46,5 @@ terminate:
 debug:
 	cd ${socketFolder}; \
 	gcc ${socketFile} -Wall -ggdb3 -g -o ${socketExecutable};\
+	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 & \
 	valgrind --track-origins=yes --leak-check=full  ./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 &
-	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &

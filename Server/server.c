@@ -109,18 +109,4 @@ int main(int argc, char *argv[]) {
   else
     printf("Not all parameters are given. Should enter: primaryServerPort, "
            "secondaryServerPort, socketId");
-    /*     EnvVar env_vars[MAX_ENV_VARS]; */
-
-    /* // Load the .env file */
-    /* int env_count = load_env("../commands", env_vars, MAX_ENV_VARS); */
-
-    /* if (env_count == -1) { */
-    /*     printf("Failed to load .env file\n"); */
-    /*     return 1; */
-    /* } */
-
-    /* // Get specific environment variables by key */
-    /* char *sendName = get_env_value("SendName", env_vars, env_count); */
-    /* printf("%s\n",sendName); */
-
 }
