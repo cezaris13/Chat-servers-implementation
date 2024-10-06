@@ -21,23 +21,16 @@ buildServer:
 	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 & \
 	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &
 
-buildClient:
-	cd ${clientFolder}; \
-	javac ${chatClientName}.java; \
-	cp ${chatClientName}.class ${user1}/${chatClientName}.class; \
-	cd ${user1}; \
-	java ${chatClientName} ${ip} ${firstPort}& \
-
 buildClients:
 	cd ${clientFolder}; \
 	javac ${chatClientName}.java; \
 	cp ${chatClientName}.class ${user1}/${chatClientName}.class; \
 	cp ${chatClientName}.class ${user2}/${chatClientName}.class; \
 	cd ${user1}; \
-	java ${chatClientName} ${ip} ${firstPort}& \
+	java ${chatClientName} ${ip} ${firstPort}& ${user1}; \
 	cd ..; \
 	cd ${user2}; \
-	java ${chatClientName} ${ip} ${secondPort}&
+	java ${chatClientName} ${ip} ${secondPort} ${user2} &
 
 terminate:
 	killall ${socketExecutable}

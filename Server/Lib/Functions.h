@@ -15,7 +15,7 @@ void sendFile(char *filePath, int destinationSocket, char socketName[]);
 int initializeSocket(char port[], char ip[], fd_set *master, int *listener,
                      int *fileDescriptorMax, char socketName[]);
 int initializeClient(char ip[], char port[], char socketName[]);
-void handleReceive(int i, int *userCount, char *userNames[MAX_SIZE],
+void handleReceive(int i, int *userCount, char **userNames,
                    int secondarySocketFileDescriptorActive, int *fileSending,
                    int *fileReceiving, FILE **fp,
                    int secondarySocketFileDescriptor,

@@ -459,7 +459,7 @@ void handleFileReceiving(char *buf, FILE **fp, char **fileName, int *fileReceivi
   free(noEnd);
 }
 
-void handleReceive(int i, int *userCount, char *userNames[MAX_SIZE],
+void handleReceive(int i, int *userCount, char **userNames,
                    int secondarySocketFileDescriptorActive, int *fileSending,
                    int *fileReceiving, FILE **fp,
                    int secondarySocketFileDescriptor,

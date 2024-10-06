@@ -29,14 +29,16 @@ public class ChatClient {
 
     private String port;
     private String ip;
+    private String name;
 
     public ChatClient() {
        initGui();
     }
 
-    public ChatClient(String ip, String port) {
+    public ChatClient(String ip, String port, String name) {
         this.ip = ip;
         this.port = port;
+        this.name = name;
         initGui();
     }
 
@@ -120,6 +122,7 @@ public class ChatClient {
             System.out.println();
 
             if (shouldReceiveFile) {
+                System.out.println(bufferedReaderText);
                 if (bufferedReaderText.startsWith(commands.get("End")))
                     shouldReceiveFile = false;
                 else
@@ -131,7 +134,12 @@ public class ChatClient {
             System.out.println(bufferedReaderText.length());
 
             if (bufferedReaderText.startsWith(commands.get("SendName"))) {
-                printWriter.println(showEnterNameDialog());
+                if (name == null){
+                    printWriter.println(showEnterNameDialog());
+                }
+                else {
+                    printWriter.println(name);
+                }
             } else if (bufferedReaderText.startsWith(commands.get("NameOk"))) {
                 textField.setEditable(true);
             } else if (bufferedReaderText.startsWith(commands.get("Message"))) {
@@ -168,7 +176,9 @@ public class ChatClient {
     }
 
     public static void main(String[] args) throws Exception {
-        ChatClient chatClient = args.length == 2 ? new ChatClient(args[0],args[1]) : new ChatClient();
+        System.out.println("USERNAME");
+        System.out.println(args[2]);
+        ChatClient chatClient = args.length == 3 ? new ChatClient(args[0],args[1],args[2]) : new ChatClient();
         chatClient.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         chatClient.frame.setVisible(true);
         chatClient.run();
