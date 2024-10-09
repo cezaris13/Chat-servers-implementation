@@ -8,11 +8,17 @@ clientFolder = ./Client/
 chatClientName = ChatClient
 user1 = User1
 user2 = User2
+serverOne = Server1
+serverTwo = Server2
 
 buildServers:
 	gcc ${socketFolder}${socketFile} -o ${socketFolder}${socketExecutable}
 	cd ${socketFolder}; \
+	cp ${socketExecutable} ${serverOne}; \
+	cp ${socketExecutable} ${serverTwo}; \
+	cd ${serverOne}; \
 	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 & \
+	cd ../${serverTwo}; \
 	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &
 
 buildServer:
@@ -27,7 +33,7 @@ buildClients:
 	cp ${chatClientName}.class ${user1}/${chatClientName}.class; \
 	cp ${chatClientName}.class ${user2}/${chatClientName}.class; \
 	cd ${user1}; \
-	java ${chatClientName} ${ip} ${firstPort}& ${user1}; \
+	java ${chatClientName} ${ip} ${firstPort} ${user1} & \
 	cd ..; \
 	cd ${user2}; \
 	java ${chatClientName} ${ip} ${secondPort} ${user2} &

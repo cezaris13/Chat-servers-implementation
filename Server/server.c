@@ -17,27 +17,31 @@
 
 int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
                 char socketId[]) {
-  char socketName[7] = "Socket ";
+  char socketName[7] = "Socket";
   strncat(socketName, &socketId[0], 1);
-  int fileDescriptorMax = -1, primarySocketFileDescriptor, newFileDescriptor;
-  char *userNames[MAX_USERS];
-  int userCount = 0;
+  int newFileDescriptor;
+  Users users;
+  users.names = (char **)malloc(MAX_USERS * sizeof(char *));
+  users.count = 0;
   fd_set readFileDescriptor, master;
   struct sockaddr_storage remoteAddress;
 
   for (int i = 0; i < MAX_USERS; i++)
-    userNames[i] = malloc(sizeof(char) * (MAX_USERNAME_SIZE + 1));
+    users.names[i] = malloc(sizeof(char) * (MAX_USERNAME_SIZE + 1));
 
-  char *fileName = malloc(sizeof(char) * (MAX_SIZE));
-  FILE *file = NULL;
+  FileData fileData;
+  fileData.fp = NULL;
+  fileData.fileName = malloc(sizeof(char) * MAX_SIZE);
+  fileData.isReceiving = 0;
+  fileData.isSending = 0;
 
-  initializeSocket(primarySocketPort, ip, &master, &primarySocketFileDescriptor,
-                   &fileDescriptorMax, socketName);
-  int secondarySocketFileDescriptor;
-  int secondarySocketFileDescriptorActive;
+  FileDescriptors fileDescriptors;
+  fileDescriptors.fileDescriptorMax = -1;
+
+
+  initializeSocket(primarySocketPort, ip, &master, &(fileDescriptors.primarySocketFileDescriptor),
+                   &(fileDescriptors.fileDescriptorMax), socketName);
   int isFirstTimeConnection = 1;
-  int fileReceiving = 0;
-  int fileSending = 0;
 
   int isSecondaryServerOnline = 0;
   while (1) {
@@ -46,36 +50,32 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
     // Run do while to search for secondary socket if it exists.
     if (!isSecondaryServerOnline) {
       do {
-        secondarySocketFileDescriptor =
+        fileDescriptors.secondarySocketFileDescriptor =
             initializeClient(ip, secondarySocketPort, socketName);
         printf("%s: searching for other socket\n", socketName);
         sleep(1);
-      } while (secondarySocketFileDescriptor == -1);
+      } while (fileDescriptors.secondarySocketFileDescriptor == -1);
 
       isSecondaryServerOnline = 1;
     }
 
-    if (select(fileDescriptorMax + 1, &readFileDescriptor, NULL, NULL, NULL) ==
+    if (select(fileDescriptors.fileDescriptorMax + 1, &readFileDescriptor, NULL, NULL, NULL) ==
         -1) {
       printf("%s: select error\n", socketName);
       return -1;
     }
 
-    for (int i = 0; i <= fileDescriptorMax; i++) {
+    for (int i = 0; i <= fileDescriptors.fileDescriptorMax; i++) {
       if (!FD_ISSET(i, &readFileDescriptor))
         continue;
 
-      if (primarySocketFileDescriptor != i) {
-        handleReceive(i, &userCount, userNames,
-                      secondarySocketFileDescriptorActive, &fileSending,
-                      &fileReceiving, &file, secondarySocketFileDescriptor,
-                      primarySocketFileDescriptor, fileDescriptorMax, &master,
-                      &fileName, socketName);
+      if (fileDescriptors.primarySocketFileDescriptor != i) {
+        handleReceive(i, &users, &fileData, &fileDescriptors, &master, socketName);
         continue;
       }
 
       socklen_t addressLength = sizeof remoteAddress;
-      if ((newFileDescriptor = accept(primarySocketFileDescriptor,
+      if ((newFileDescriptor = accept(fileDescriptors.primarySocketFileDescriptor,
                                       (struct sockaddr *)&remoteAddress,
                                       &addressLength)) == -1) {
         printf("%s: accept error\n", socketName);
@@ -85,19 +85,19 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
       // If the connection
       if (!isFirstTimeConnection) {
         FD_SET(newFileDescriptor, &master);
-        if (newFileDescriptor > fileDescriptorMax)
-          fileDescriptorMax = newFileDescriptor;
+        if (newFileDescriptor > fileDescriptors.fileDescriptorMax)
+          fileDescriptors.fileDescriptorMax = newFileDescriptor;
 
-        getUserName(socketName, newFileDescriptor, &userCount, userNames);
+        getUserName(socketName, newFileDescriptor, &(users.count), users.names);
         continue;
       }
 
       isFirstTimeConnection = 0;
-      secondarySocketFileDescriptorActive = newFileDescriptor;
+      fileDescriptors.secondarySocketFileDescriptorActive = newFileDescriptor;
       FD_SET(newFileDescriptor, &master);
 
-      if (newFileDescriptor > fileDescriptorMax)
-        fileDescriptorMax = newFileDescriptor;
+      if (newFileDescriptor > fileDescriptors.fileDescriptorMax)
+        fileDescriptors.fileDescriptorMax = newFileDescriptor;
     }
   }
   return 0;

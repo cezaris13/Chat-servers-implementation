@@ -176,8 +176,6 @@ public class ChatClient {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println("USERNAME");
-        System.out.println(args[2]);
         ChatClient chatClient = args.length == 3 ? new ChatClient(args[0],args[1],args[2]) : new ChatClient();
         chatClient.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         chatClient.frame.setVisible(true);
