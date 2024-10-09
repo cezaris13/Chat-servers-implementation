@@ -1,5 +1,9 @@
 # Chat server implementation using sockets for Computer networks course in Vilnius university (2022, spring semester)
 
+## The structure of the client server connections:
+- There are 2 sockets(servers) which connect to each other.
+- The users connect to server 1 and server 2.
+
 ## Launching the program
 ```bash
 make buildServers # launches 2 server instances with ports 20000 and 10000
@@ -15,4 +19,3 @@ make terminate
 - Sending messages
 - Reading file content which is stored in the server (ex. #get `filename` ...) will read the file of the socket to which the user is connected.
 - File sending to specified socket(ex. @Socket1 `filename`), after sending the file, the destination socket sends the message to the users of that socket that the file has been received.
-
