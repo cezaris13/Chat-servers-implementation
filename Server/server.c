@@ -38,8 +38,8 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
   FileDescriptors fileDescriptors;
   fileDescriptors.fileDescriptorMax = -1;
 
-
-  initializeSocket(primarySocketPort, ip, &master, &(fileDescriptors.primarySocketFileDescriptor),
+  initializeSocket(primarySocketPort, ip, &master,
+                   &(fileDescriptors.primarySocketFileDescriptor),
                    &(fileDescriptors.fileDescriptorMax), socketName);
   int isFirstTimeConnection = 1;
 
@@ -59,8 +59,8 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
       isSecondaryServerOnline = 1;
     }
 
-    if (select(fileDescriptors.fileDescriptorMax + 1, &readFileDescriptor, NULL, NULL, NULL) ==
-        -1) {
+    if (select(fileDescriptors.fileDescriptorMax + 1, &readFileDescriptor, NULL,
+               NULL, NULL) == -1) {
       printf("%s: select error\n", socketName);
       return -1;
     }
@@ -70,14 +70,15 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
         continue;
 
       if (fileDescriptors.primarySocketFileDescriptor != i) {
-        handleReceive(i, &users, &fileData, &fileDescriptors, &master, socketName);
+        handleReceive(i, &users, &fileData, &fileDescriptors, &master,
+                      socketName);
         continue;
       }
 
       socklen_t addressLength = sizeof remoteAddress;
-      if ((newFileDescriptor = accept(fileDescriptors.primarySocketFileDescriptor,
-                                      (struct sockaddr *)&remoteAddress,
-                                      &addressLength)) == -1) {
+      if ((newFileDescriptor = accept(
+               fileDescriptors.primarySocketFileDescriptor,
+               (struct sockaddr *)&remoteAddress, &addressLength)) == -1) {
         printf("%s: accept error\n", socketName);
         continue;
       }
@@ -93,7 +94,6 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
       }
 
       isFirstTimeConnection = 0;
-      // fileDescriptors.secondarySocketFileDescriptorActive = newFileDescriptor;
       FD_SET(newFileDescriptor, &master);
 
       if (newFileDescriptor > fileDescriptors.fileDescriptorMax)

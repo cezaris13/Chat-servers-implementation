@@ -17,7 +17,7 @@
 #define MAX_ENV_VARS 100
 #define MAX_LINE_LENGTH 256
 
-const char* envCommandsLocation = "../../commands";
+const char *envCommandsLocation = "../../commands";
 typedef struct {
   char key[MAX_KEY_LENGTH];
   char value[MAX_VALUE_LENGTH];
@@ -126,7 +126,7 @@ void sendMessage(int socketFileDescriptor, char *message, char socketName[]) {
 
 int containsUserName(char *searchedString, char *userNames[MAX_USERS]) {
   for (int i = 0; i < MAX_USERS; i++) {
-    if(userNames[i] == NULL)
+    if (userNames[i] == NULL)
       break;
 
     if (strcmp(searchedString, userNames[i]) == 0)
@@ -138,13 +138,14 @@ int containsUserName(char *searchedString, char *userNames[MAX_USERS]) {
 void getUserName(char socketName[], int socketFd, int *userCount,
                  char *userNames[MAX_USERS]) {
   if (*userCount >= MAX_USERS)
-    return;  // No need to proceed if the user count exceeds the maximum
+    return; // No need to proceed if the user count exceeds the maximum
 
   int env_count = load_env(envCommandsLocation, env_vars, MAX_ENV_VARS);
-  char *sendNameCommand = malloc(sizeof(char)*MAX_SIZE);
+  char *sendNameCommand = malloc(sizeof(char) * MAX_SIZE);
   char *nameOkString = malloc(sizeof(char) * MAX_SIZE);
 
-  sprintf(sendNameCommand, "%s\n", get_env_value("SendName", env_vars, env_count));
+  sprintf(sendNameCommand, "%s\n",
+          get_env_value("SendName", env_vars, env_count));
   sprintf(nameOkString, "%s\n", get_env_value("NameOk", env_vars, env_count));
 
   while (1) {
@@ -157,7 +158,7 @@ void getUserName(char socketName[], int socketFd, int *userCount,
 
     char *newlinePos = strchr(bufUserName, '\n');
     if (newlinePos != NULL)
-      *newlinePos = '\0';  // Replace '\n' with null terminator
+      *newlinePos = '\0'; // Replace '\n' with null terminator
 
     if (strlen(bufUserName) == 0)
       break;
@@ -185,8 +186,9 @@ void sendFile(char *filePath, int destinationSocket, char socketName[]) {
   char *message = malloc(sizeof(char) * MAX_SIZE);
   char *endOfFile = malloc(sizeof(char) * MAX_SIZE);
 
-  sprintf(message, "%s%s\n", get_env_value("File", env_vars, env_count), filePath);
-  sprintf(endOfFile, "%s\n",get_env_value("End", env_vars, env_count));
+  sprintf(message, "%s%s\n", get_env_value("File", env_vars, env_count),
+          filePath);
+  sprintf(endOfFile, "%s\n", get_env_value("End", env_vars, env_count));
 
   sendMessage(destinationSocket, message, socketName);
   // Buffer for reading the file
@@ -197,7 +199,8 @@ void sendFile(char *filePath, int destinationSocket, char socketName[]) {
     sendMessage(destinationSocket, buffer, socketName);
   }
   sendMessage(destinationSocket, endOfFile, socketName);
-  printf("%s: file sending to %d socket has finished\n", socketName, destinationSocket);
+  printf("%s: file sending to %d socket has finished\n", socketName,
+         destinationSocket);
   fclose(file);
   free(message);
   free(buffer);
@@ -207,13 +210,13 @@ void sendFile(char *filePath, int destinationSocket, char socketName[]) {
 int initializeSocket(char port[], char ip[], fd_set *master, int *listener,
                      int *fileDescriptorMax, char socketName[]) {
   struct addrinfo hints, *servInfo, *currInfo;
-  int reuseAddrOpt = 1;  // More descriptive name for the option flag
+  int reuseAddrOpt = 1; // More descriptive name for the option flag
 
   // Zero out the 'hints' struct and fill in necessary fields
   memset(&hints, 0, sizeof hints);
-  hints.ai_family = AF_UNSPEC;        // Use IPv4 or IPv6
-  hints.ai_socktype = SOCK_STREAM;    // TCP stream sockets
-  hints.ai_flags = AI_PASSIVE;        // For wildcard IP address
+  hints.ai_family = AF_UNSPEC;     // Use IPv4 or IPv6
+  hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+  hints.ai_flags = AI_PASSIVE;     // For wildcard IP address
 
   int rv;
   if ((rv = getaddrinfo(ip, port, &hints, &servInfo)) != 0) {
@@ -228,8 +231,8 @@ int initializeSocket(char port[], char ip[], fd_set *master, int *listener,
       continue;
     }
 
-    if (setsockopt(*listener, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &reuseAddrOpt,
-                   sizeof(reuseAddrOpt))) {
+    if (setsockopt(*listener, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                   &reuseAddrOpt, sizeof(reuseAddrOpt))) {
       printf("%s: setSockopt error: ", socketName);
       perror("setsockopt");
       continue;
@@ -254,7 +257,7 @@ int initializeSocket(char port[], char ip[], fd_set *master, int *listener,
 
   if (listen(*listener, 10) < 0) {
     printf("%s: listen failure\n", socketName);
-    close(*listener);  // Close the socket if listen fails
+    close(*listener); // Close the socket if listen fails
     return -1;
   }
 
@@ -309,25 +312,28 @@ int initializeClient(char ip[], char port[], char socketName[]) {
   return socketId;
 }
 
-void handleGetCommand(char* command, char *buf, int clientSocket, char socketName[]) {
-    char *fileName = buf + strlen(command);
-    printf("%s: %s\n", socketName, fileName);
-    sendFile(trimwhitespace(fileName), clientSocket, socketName);
+void handleGetCommand(char *command, char *buf, int clientSocket,
+                      char socketName[]) {
+  char *fileName = buf + strlen(command);
+  printf("%s: %s\n", socketName, fileName);
+  sendFile(trimwhitespace(fileName), clientSocket, socketName);
 }
 
-void handleAtCommand(char *buf, int clientSocket, int secondarySocketFileDescriptor,
-                     FileData *fileData, char socketName[]) {
+void handleAtCommand(char *buf, int clientSocket,
+                     int secondarySocketFileDescriptor, FileData *fileData,
+                     char socketName[]) {
   int env_count = load_env(envCommandsLocation, env_vars, MAX_ENV_VARS);
   char *fileCommand = get_env_value("File", env_vars, env_count);
   char *receiveFileCommand = get_env_value("ReceiveFile", env_vars, env_count);
 
   char *message = malloc(sizeof(char) * MAX_SIZE);
 
-  //handling the case when theres no socket name
+  // handling the case when theres no socket name
   char *file = strchr(buf, ' ');
   char *ff = trimwhitespace(file); // check if contains newline
   sprintf(message, "%s%s\n", fileCommand, ff);
-  printf("secondary socket file descriptor: %d\n", secondarySocketFileDescriptor);
+  printf("secondary socket file descriptor: %d\n",
+         secondarySocketFileDescriptor);
   printf("ClientSocket: %d\n", clientSocket);
   if (strstr(buf, socketName)) {
     fileData->isReceiving = 1;
@@ -380,7 +386,8 @@ void handleFileCommand(char *buf, FileData *fileData, char socketName[]) {
   free(file1);
 }
 
-void broadcastMessage(char *buf, char *userName, fd_set *master, FileDescriptors *fileDescriptors, char socketName[]) {
+void broadcastMessage(char *buf, char *userName, fd_set *master,
+                      FileDescriptors *fileDescriptors, char socketName[]) {
   char *newlinePos = strchr(buf, '\n');
   if (newlinePos != NULL)
     *newlinePos = '\0'; // Replace '\n' with null terminator
@@ -394,16 +401,19 @@ void broadcastMessage(char *buf, char *userName, fd_set *master, FileDescriptors
   for (int i = 0; i <= fileDescriptors->fileDescriptorMax; i++) {
     if (!FD_ISSET(i, master))
       continue;
-    if (i == fileDescriptors->primarySocketFileDescriptor || i == fileDescriptors->secondarySocketFileDescriptor)
+    if (i == fileDescriptors->primarySocketFileDescriptor ||
+        i == fileDescriptors->secondarySocketFileDescriptor)
       continue;
 
     printf("%s: %s", socketName, message);
     sendMessage(i, message, socketName);
   }
 
-  free(message);}
+  free(message);
+}
 
-void handleFileSending(char *buf, int *fileSending, int secondarySocketFileDescriptor, char socketName[]) {
+void handleFileSending(char *buf, int *fileSending,
+                       int secondarySocketFileDescriptor, char socketName[]) {
   char *result = strdup(buf); // Duplicate the buffer into a new string
   if (result == NULL) {
     perror("Failed to allocate memory for file sending");
@@ -425,10 +435,8 @@ void handleFileSending(char *buf, int *fileSending, int secondarySocketFileDescr
   free(result);
 }
 
-void handleFileReceiving(char *buf, fd_set *master,
-                         FileData *fileData,
-                         FileDescriptors *fileDescriptors,
-                         char socketName[]) {
+void handleFileReceiving(char *buf, fd_set *master, FileData *fileData,
+                         FileDescriptors *fileDescriptors, char socketName[]) {
   int env_count = load_env(envCommandsLocation, env_vars, MAX_ENV_VARS);
   char *messageCommand = get_env_value("Message", env_vars, env_count);
   char *endOfFile = get_env_value("End", env_vars, env_count);
@@ -437,7 +445,7 @@ void handleFileReceiving(char *buf, fd_set *master,
   char *noEnd = strremove(result, endOfFile);
 
   // Write the content to the file
-  if(fputs(noEnd, fileData->fp) == EOF) {
+  if (fputs(noEnd, fileData->fp) == EOF) {
     printf("Failed to write to a file\n");
     free(noEnd);
     return;
@@ -457,27 +465,32 @@ void handleFileReceiving(char *buf, fd_set *master,
     perror("Failed to close the file");
   }
 
-  printf("%s: File receiving completed for %s.\n", socketName, fileData->fileName);
+  printf("%s: File receiving completed for %s.\n", socketName,
+         fileData->fileName);
 
   // Notify all clients about the received file
   for (int j = 0; j <= fileDescriptors->fileDescriptorMax; j++) {
     if (!FD_ISSET(j, master))
       continue;
-    if (j == fileDescriptors->primarySocketFileDescriptor || j == fileDescriptors->secondarySocketFileDescriptor)
+    if (j == fileDescriptors->primarySocketFileDescriptor ||
+        j == fileDescriptors->secondarySocketFileDescriptor)
       continue;
 
     char *message = malloc(sizeof(char) * MAX_SIZE);
-    sprintf(message, "%sFile has been received: %s\n", messageCommand, fileData->fileName);
+    sprintf(message, "%sFile has been received: %s\n", messageCommand,
+            fileData->fileName);
     sendMessage(j, message, socketName);
     free(message);
-    }
+  }
 
-    // Clear the fileName after the file is received
+  // Clear the fileName after the file is received
   memset(fileData->fileName, 0, MAX_SIZE);
   free(noEnd);
 }
 
-void handleReceive(int i, Users *userData, FileData *fileData, FileDescriptors *fileDescriptors, fd_set *master, char socketName[]) {
+void handleReceive(int i, Users *userData, FileData *fileData,
+                   FileDescriptors *fileDescriptors, fd_set *master,
+                   char socketName[]) {
 
   EnvVar env_vars[MAX_ENV_VARS];
   int env_count = load_env(envCommandsLocation, env_vars, MAX_ENV_VARS);
@@ -497,7 +510,7 @@ void handleReceive(int i, Users *userData, FileData *fileData, FileDescriptors *
       printf("%s: socket %d hung up\n", socketName, i);
     else
       printf("%s: recv error: %d\n", socketName, nbytes);
-    
+
     close(i);
     FD_CLR(i, master);
 
@@ -511,16 +524,21 @@ void handleReceive(int i, Users *userData, FileData *fileData, FileDescriptors *
   if (strstr(buf, getCommand)) {
     handleGetCommand(getCommand, buf, i, socketName);
   } else if (strstr(buf, sendFileCommand)) {
-    handleAtCommand(buf, i, fileDescriptors->secondarySocketFileDescriptor, fileData, socketName);
-     } else if (strstr(buf, fileCommand)) {
+    handleAtCommand(buf, i, fileDescriptors->secondarySocketFileDescriptor,
+                    fileData, socketName);
+  } else if (strstr(buf, fileCommand)) {
     handleFileCommand(buf, fileData, socketName);
   } else if (fileData->isReceiving) {
     handleFileReceiving(buf, master, fileData, fileDescriptors, socketName);
   } else if (fileData->isSending) {
-    handleFileSending(buf, &(fileData->isSending), fileDescriptors->secondarySocketFileDescriptor, socketName);
-  } else if (strstr(buf, messageCommand) == NULL && !(fileData->isReceiving) && !(fileData->isSending)) {
-    broadcastMessage(buf,userData->names[i], master, fileDescriptors, socketName);
-    }
+    handleFileSending(buf, &(fileData->isSending),
+                      fileDescriptors->secondarySocketFileDescriptor,
+                      socketName);
+  } else if (strstr(buf, messageCommand) == NULL && !(fileData->isReceiving) &&
+             !(fileData->isSending)) {
+    broadcastMessage(buf, userData->names[i], master, fileDescriptors,
+                     socketName);
+  }
 
   memset(buf, 0, sizeof(buf));
 }
