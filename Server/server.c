@@ -93,7 +93,7 @@ int startServer(char ip[], char primarySocketPort[], char secondarySocketPort[],
       }
 
       isFirstTimeConnection = 0;
-      fileDescriptors.secondarySocketFileDescriptorActive = newFileDescriptor;
+      // fileDescriptors.secondarySocketFileDescriptorActive = newFileDescriptor;
       FD_SET(newFileDescriptor, &master);
 
       if (newFileDescriptor > fileDescriptors.fileDescriptorMax)

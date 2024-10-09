@@ -38,7 +38,6 @@ typedef struct {
 typedef struct {
   int primarySocketFileDescriptor;
   int secondarySocketFileDescriptor;
-  int secondarySocketFileDescriptorActive;
   int fileDescriptorMax;
 } FileDescriptors;
 
@@ -106,7 +105,6 @@ int load_env(const char *filename, EnvVar env_vars[], int max_vars) {
       env_count++;
     }
   }
-
   fclose(file);
   return env_count;
 }
@@ -152,7 +150,6 @@ void getUserName(char socketName[], int socketFd, int *userCount,
   while (1) {
     char bufUserName[MAX_USERS];
     sendMessage(socketFd, sendNameCommand, socketName);
-
     if (recv(socketFd, bufUserName, sizeof bufUserName, 0) < 0) {
       printf("%s: recv error\n", socketName);
       continue;
@@ -200,6 +197,7 @@ void sendFile(char *filePath, int destinationSocket, char socketName[]) {
     sendMessage(destinationSocket, buffer, socketName);
   }
   sendMessage(destinationSocket, endOfFile, socketName);
+  printf("%s: file sending to %d socket has finished\n", socketName, destinationSocket);
   fclose(file);
   free(message);
   free(buffer);
@@ -317,12 +315,11 @@ void handleGetCommand(char* command, char *buf, int clientSocket, char socketNam
     sendFile(trimwhitespace(fileName), clientSocket, socketName);
 }
 
-void handleAtCommand(char *buf, int clientSocket, int secondarySocketFileDescriptorActive,
+void handleAtCommand(char *buf, int clientSocket, int secondarySocketFileDescriptor,
                      FileData *fileData, char socketName[]) {
   int env_count = load_env(envCommandsLocation, env_vars, MAX_ENV_VARS);
   char *fileCommand = get_env_value("File", env_vars, env_count);
   char *receiveFileCommand = get_env_value("ReceiveFile", env_vars, env_count);
-  char *sendFileCommand = get_env_value("SendFile", env_vars, env_count);
 
   char *message = malloc(sizeof(char) * MAX_SIZE);
 
@@ -330,7 +327,7 @@ void handleAtCommand(char *buf, int clientSocket, int secondarySocketFileDescrip
   char *file = strchr(buf, ' ');
   char *ff = trimwhitespace(file); // check if contains newline
   sprintf(message, "%s%s\n", fileCommand, ff);
-  printf("secondary socket file descriptor: %d\n", secondarySocketFileDescriptorActive);
+  printf("secondary socket file descriptor: %d\n", secondarySocketFileDescriptor);
   printf("ClientSocket: %d\n", clientSocket);
   if (strstr(buf, socketName)) {
     fileData->isReceiving = 1;
@@ -338,7 +335,7 @@ void handleAtCommand(char *buf, int clientSocket, int secondarySocketFileDescrip
     strcpy(fileData->fileName, file);
     fileData->fp = fopen(ff, "w");
   } else {
-    sendMessage(secondarySocketFileDescriptorActive, message, socketName);
+    sendMessage(secondarySocketFileDescriptor, message, socketName);
     fileData->isSending = 1;
   }
   free(message);
@@ -406,7 +403,7 @@ void broadcastMessage(char *buf, char *userName, fd_set *master, FileDescriptors
 
   free(message);}
 
-void handleFileSending(char *buf, int *fileSending, int secondarySocketFileDescriptorActive, char socketName[]) {
+void handleFileSending(char *buf, int *fileSending, int secondarySocketFileDescriptor, char socketName[]) {
   char *result = strdup(buf); // Duplicate the buffer into a new string
   if (result == NULL) {
     perror("Failed to allocate memory for file sending");
@@ -417,7 +414,8 @@ void handleFileSending(char *buf, int *fileSending, int secondarySocketFileDescr
   char *endOfFile = get_env_value("End", env_vars, env_count);
   printf("%s: sending %s\n", socketName, result);
 
-  sendMessage(secondarySocketFileDescriptorActive, result, socketName);
+  printf("%d\n", secondarySocketFileDescriptor);
+  sendMessage(secondarySocketFileDescriptor, result, socketName);
 
   if (strstr(buf, endOfFile)) {
     *fileSending = 0; // End file sending when %END% is detected
@@ -446,23 +444,20 @@ void handleFileReceiving(char *buf, fd_set *master,
   }
   printf("%s: receiving %s\n", socketName, noEnd);
 
-  printf("buffer is: %s, and endOfFile is: %s\n",buf, endOfFile);
   if (!strstr(buf, endOfFile)) {
     // If the file content does not contain %END%, return and continue receiving
-    free(noEnd);
-    return;
-  } else if (strstr(buf,endOfFile) && strlen(buf) != strlen(endOfFile)) {
     free(noEnd);
     return;
   }
 
   // End file receiving and notify clients
   fileData->isReceiving = 0;
+  printf("file receiving: %s: is receiving has ended\n", socketName);
   if (fclose(fileData->fp) == EOF) {
     perror("Failed to close the file");
   }
 
-  printf("%s: File reception completed for %s.\n", socketName, fileData->fileName);
+  printf("%s: File receiving completed for %s.\n", socketName, fileData->fileName);
 
   // Notify all clients about the received file
   for (int j = 0; j <= fileDescriptors->fileDescriptorMax; j++) {
@@ -501,8 +496,8 @@ void handleReceive(int i, Users *userData, FileData *fileData, FileDescriptors *
     if (nbytes == 0)
       printf("%s: socket %d hung up\n", socketName, i);
     else
-      printf("%s: recv error\n", socketName);
-
+      printf("%s: recv error: %d\n", socketName, nbytes);
+    
     close(i);
     FD_CLR(i, master);
 
@@ -516,13 +511,13 @@ void handleReceive(int i, Users *userData, FileData *fileData, FileDescriptors *
   if (strstr(buf, getCommand)) {
     handleGetCommand(getCommand, buf, i, socketName);
   } else if (strstr(buf, sendFileCommand)) {
-    handleAtCommand(buf, i, fileDescriptors->secondarySocketFileDescriptorActive, fileData, socketName);
+    handleAtCommand(buf, i, fileDescriptors->secondarySocketFileDescriptor, fileData, socketName);
      } else if (strstr(buf, fileCommand)) {
     handleFileCommand(buf, fileData, socketName);
   } else if (fileData->isReceiving) {
     handleFileReceiving(buf, master, fileData, fileDescriptors, socketName);
   } else if (fileData->isSending) {
-    handleFileSending(buf, &(fileData->isSending), fileDescriptors->secondarySocketFileDescriptorActive, socketName);
+    handleFileSending(buf, &(fileData->isSending), fileDescriptors->secondarySocketFileDescriptor, socketName);
   } else if (strstr(buf, messageCommand) == NULL && !(fileData->isReceiving) && !(fileData->isSending)) {
     broadcastMessage(buf,userData->names[i], master, fileDescriptors, socketName);
     }

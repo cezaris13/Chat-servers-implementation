@@ -171,6 +171,7 @@ public class ChatClient {
             printWriter.flush();
         }
         System.out.println("that's it");
+        printWriter.println(commands.get("End"));
         printWriter.flush();
         stream.close();
     }

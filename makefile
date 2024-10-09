@@ -17,15 +17,15 @@ buildServers:
 	cp ${socketExecutable} ${serverOne}; \
 	cp ${socketExecutable} ${serverTwo}; \
 	cd ${serverOne}; \
-	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 & \
+	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 1 & \
 	cd ../${serverTwo}; \
-	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &
+	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 2 &
 
 buildServer:
 	gcc ${socketFolder}${socketFile} -o ${socketFolder}${socketExecutable}
 	cd ${socketFolder}; \
-	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 & \
-	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 &
+	./${socketExecutable} ${ip} ${firstPort} ${secondPort} 1 & \
+	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 2 &
 
 buildClients:
 	cd ${clientFolder}; \
@@ -45,5 +45,5 @@ terminate:
 debug:
 	cd ${socketFolder}; \
 	gcc ${socketFile} -Wall -ggdb3 -g -o ${socketExecutable};\
-	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 1 & \
-	valgrind --track-origins=yes --leak-check=full  ./${socketExecutable} ${ip} ${firstPort} ${secondPort} 0 &
+	./${socketExecutable} ${ip} ${secondPort} ${firstPort} 2 & \
+	valgrind --track-origins=yes --leak-check=full  ./${socketExecutable} ${ip} ${firstPort} ${secondPort} 1 &
